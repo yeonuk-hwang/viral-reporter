@@ -4,6 +4,7 @@ import path from 'path';
 import { app, BrowserWindow, shell } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
+import { bootstrap } from './main.handler';
 import { resolveHtmlPath } from './util';
 
 class AppUpdater {
@@ -13,6 +14,8 @@ class AppUpdater {
     autoUpdater.checkForUpdatesAndNotify();
   }
 }
+
+const bootstrapCompleted = bootstrap();
 
 let mainWindow: BrowserWindow | null = null;
 
@@ -68,10 +71,13 @@ const createWindow = async () => {
 
   mainWindow.loadURL(resolveHtmlPath('index.html'));
 
-  mainWindow.on('ready-to-show', () => {
+  mainWindow.on('ready-to-show', async () => {
     if (!mainWindow) {
       throw new Error('"mainWindow" is not defined');
     }
+
+    await bootstrapCompleted;
+
     if (process.env.START_MINIMIZED) {
       mainWindow.minimize();
     } else {

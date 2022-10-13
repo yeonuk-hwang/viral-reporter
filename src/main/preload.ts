@@ -1,3 +1,9 @@
-import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
+import { contextBridge, ipcRenderer } from 'electron';
+import { CHANNEL } from './channel';
 
-contextBridge.exposeInMainWorld('api', {});
+export const API = {
+  [CHANNEL.LOGIN]: (userInfo: { userName: string; password: string }) =>
+    ipcRenderer.invoke(CHANNEL.LOGIN, userInfo),
+};
+
+contextBridge.exposeInMainWorld('api', API);
