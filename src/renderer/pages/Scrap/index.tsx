@@ -1,0 +1,118 @@
+import { useEffect, useRef, useState } from 'react';
+import {
+  Box,
+  Button,
+  Flex,
+  Heading,
+  Progress,
+  Table,
+  TableContainer,
+  Tbody,
+  Th,
+  Thead,
+  Tr,
+} from '@chakra-ui/react';
+import { useScrapTargets } from './hooks/useScrapTargets';
+import { ScrapTableRow } from './ScrapTableRow';
+import { useRequestScrap } from './hooks/useRequestScrap';
+import { ResultModal } from './ResultModal';
+
+export function Scrap() {
+  const {
+    scrapTargets,
+    saveScrapTargetFromChangeEvent,
+    makeNewTargets,
+    deleteScrapTarget,
+  } = useScrapTargets();
+  const { requestScrap, isLoading, result } = useRequestScrap();
+  const [showResult, setShowResult] = useState(false);
+  const closeResult = () => setShowResult(false);
+
+  useEffect(() => {
+    if (result && !isLoading) {
+      setShowResult(true);
+    }
+  }, [isLoading, result]);
+
+  const ref = useRef<HTMLTableRowElement>(null);
+  const scrollIntoLastElement = () => {
+    ref.current?.scrollIntoView(false);
+  };
+
+  useEffect(scrollIntoLastElement);
+
+  return (
+    <>
+      <Box
+        width="100vw"
+        height="100vh"
+        display="flex"
+        flexDir="column"
+        alignItems="center"
+        paddingTop="20px"
+        paddingX="5vw"
+      >
+        <Heading marginBottom="30px">스크랩</Heading>
+        <Flex
+          width="100%"
+          justifyContent="space-between"
+          alignItems="center"
+          marginBottom="20px"
+        >
+          <Progress
+            flex="0.85"
+            size="lg"
+            hasStripe
+            isIndeterminate={isLoading}
+          />
+          <Button
+            flex="0.1"
+            colorScheme="messenger"
+            onClick={() => requestScrap(scrapTargets)}
+            isLoading={isLoading}
+          >
+            스크랩
+          </Button>
+        </Flex>
+        <Box width="100%" border="1px solid #dbdbdb">
+          <Box height="70vh" overflow="scroll">
+            <TableContainer>
+              <Table variant="simple" size="lg">
+                <Thead>
+                  <Tr>
+                    <Th width="10%" isNumeric>
+                      순번
+                    </Th>
+                    <Th width="30%">태그</Th>
+                    <Th width="50%">포스트 URL</Th>
+                    <Th width="10%">삭제</Th>
+                  </Tr>
+                </Thead>
+                <Tbody>
+                  {scrapTargets.map((scrapTarget, index) => (
+                    <ScrapTableRow
+                      key={scrapTarget.id}
+                      index={index}
+                      values={scrapTarget}
+                      onFocus={() => makeNewTargets(index)}
+                      handleInput={(e) =>
+                        saveScrapTargetFromChangeEvent(index, e)
+                      }
+                      deleteRow={() => deleteScrapTarget(index)}
+                      ref={index + 1 === scrapTargets.length ? ref : null}
+                    />
+                  ))}
+                </Tbody>
+              </Table>
+            </TableContainer>
+          </Box>
+        </Box>
+      </Box>
+      <ResultModal
+        scrapResult={result}
+        isOpen={showResult}
+        onClose={closeResult}
+      />
+    </>
+  );
+}

@@ -1,5 +1,4 @@
 import puppeteer, { Browser, Page, TimeoutError } from 'puppeteer';
-import * as path from 'path';
 import { INSTAGRAM_URL } from './constants';
 import {
   DeactivatedIDError,
@@ -36,6 +35,9 @@ class InsScarpperImpl implements InsScarpper {
 
   async login(userName: string, password: string) {
     const page = await this.browser.newPage();
+    page.setExtraHTTPHeaders({
+      'Accept-Language': 'en',
+    });
     if (this.cookie) {
       page.deleteCookie(...this.cookie);
     }
@@ -63,11 +65,16 @@ class InsScarpperImpl implements InsScarpper {
       }
 
       throw e;
+    } finally {
+      page.close();
     }
   }
 
   async exploreHashTag(tagName: string): Promise<Page> {
     const page = await this.browser.newPage();
+    page.setExtraHTTPHeaders({
+      'Accept-Language': 'en',
+    });
     await page.goto(encodeURI(this.URL.EXPLORE + tagName), {
       waitUntil: 'networkidle0',
     });
@@ -111,7 +118,9 @@ class InsScarpperImpl implements InsScarpper {
       path: screenshotPath,
     });
 
-    return path.join(process.cwd(), screenshotPath);
+    page.close();
+
+    return screenshotPath;
   }
 
   private async makeRedBorder(
