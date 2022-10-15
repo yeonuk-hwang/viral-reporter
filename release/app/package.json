@@ -1,6 +1,6 @@
 {
   "name": "instagram-popular-post-scrapper",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "instagram scrapper for popular post",
   "license": "MIT",
   "author": {
@@ -13,5 +13,7 @@
     "postinstall": "npm run rebuild && npm run link-modules",
     "link-modules": "node -r ts-node/register ../../.erb/scripts/link-modules.ts"
   },
-  "dependencies": {}
+  "dependencies": {
+    "puppeteer": "^19.0.0"
+  }
 }
