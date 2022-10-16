@@ -50,9 +50,7 @@ class InsScarpperImpl implements InsScarpper {
       await page.type(`[aria-label*=Password]`, password);
       await Promise.all([
         page.click(`[type="submit"]`),
-        page.waitForNavigation({
-          timeout: 10000,
-        }),
+        page.waitForNavigation(),
       ]);
       this.cookie = await page.cookies();
 
