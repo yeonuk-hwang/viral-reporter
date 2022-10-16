@@ -1,4 +1,6 @@
-import { app, shell } from 'electron';
+import { app, dialog, ipcMain, shell } from 'electron';
+import unhandled from 'electron-unhandled';
+import { inspect } from 'util';
 import { CHANNEL } from './channel';
 import { makeScrapper } from './scrapper';
 import { ScrapTarget } from './scrapper/types';
@@ -28,6 +30,13 @@ export const bootstrap = async () => {
 
   handleWithCustomErrors(CHANNEL.OPEN_URL, (_, path: string) => {
     return shell.openExternal(path);
+  });
+
+  ipcMain.on(CHANNEL.SHOW_ERROR_DIALOG, (_, err: Error) => {
+    dialog.showErrorBox(
+      '알수없는 에러가 발생했습니다',
+      `${err.name}: ${err.message}`
+    );
   });
 
   return scrapper;

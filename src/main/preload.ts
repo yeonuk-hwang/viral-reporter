@@ -17,6 +17,10 @@ export const API = {
 
   [CHANNEL.OPEN_URL]: (path: string) =>
     ipcRenderer.invoke(CHANNEL.OPEN_URL, path),
+
+  [CHANNEL.SHOW_ERROR_DIALOG]: (err: Error) => {
+    ipcRenderer.send(CHANNEL.SHOW_ERROR_DIALOG, err);
+  },
 };
 
 contextBridge.exposeInMainWorld('api', API);
