@@ -4,7 +4,7 @@ import { ScrapperManager } from './scrapperManager';
 
 export async function makeScrapper() {
   const browser = await puppeteer.launch({
-    args: ['--disk-cache-size=0', '--lang=en-US'],
+    args: ['--disk-cache-size=0', '--lang=en-US', '--no-sandbox'],
   });
 
   const scrapper = new InsScarpperImpl(browser);
