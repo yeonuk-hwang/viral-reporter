@@ -1,7 +1,7 @@
 /* eslint global-require: off, no-console: off, promise/always-return: off */
 
 import path from 'path';
-import { app, BrowserWindow, shell } from 'electron';
+import { app, BrowserWindow, dialog, shell } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import { bootstrap } from './main.handler';
@@ -107,10 +107,15 @@ app.on('window-all-closed', () => {
 
 app
   .whenReady()
-  .then(() => {
+  .then(async () => {
+    await bootstrap();
     createWindow();
     app.on('activate', () => {
       if (mainWindow === null) createWindow();
     });
   })
-  .catch(console.log);
+  .catch((e) => {
+    if (e instanceof Error) {
+      dialog.showErrorBox(e.name, e.message + e.stack);
+    }
+  });
