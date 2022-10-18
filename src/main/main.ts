@@ -15,8 +15,6 @@ class AppUpdater {
   }
 }
 
-const bootstrapCompleted = bootstrap();
-
 let mainWindow: BrowserWindow | null = null;
 
 if (process.env.NODE_ENV === 'production') {
@@ -74,8 +72,6 @@ const createWindow = async () => {
     if (!mainWindow) {
       throw new Error('"mainWindow" is not defined');
     }
-
-    await bootstrapCompleted;
 
     if (process.env.START_MINIMIZED) {
       mainWindow.minimize();
