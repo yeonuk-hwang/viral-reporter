@@ -1,7 +1,7 @@
 {
   "name": "instagram-popular-post-scrapper",
   "description": "instagram scrapper for popular post",
-  "version": "1.1.5",
+  "version": "1.1.6",
   "author": {
     "name": "Yeonuk Hwang",
     "email": "charlie.hwang131@gmail.com"
@@ -48,6 +48,7 @@
     "electron-log": "^4.4.8",
     "electron-updater": "^5.2.3",
     "framer-motion": "^6.5.1",
+    "puppeteer": "^19.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.3.0"
