@@ -1,6 +1,4 @@
 import { app, dialog, ipcMain, shell } from 'electron';
-import unhandled from 'electron-unhandled';
-import { inspect } from 'util';
 import { CHANNEL } from './channel';
 import { makeScrapper } from './scrapper';
 import { ScrapTarget } from './scrapper/types';
