@@ -3,15 +3,10 @@ import puppeteer from 'puppeteer';
 import { InsScarpperImpl } from './scrapper';
 import { ScrapperManager } from './scrapperManager';
 
-export async function makeScrapper() {
-  const CHROME_PATHS: Partial<Record<typeof process.platform, string>> = {
-    darwin: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
-    win32: 'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
-  };
-
+export async function makeScrapper(executablePath?: string) {
   const browser = await puppeteer.launch({
     args: ['--disk-cache-size=0', '--lang=en-US', '--no-sandbox'],
-    executablePath: CHROME_PATHS[process.platform],
+    executablePath,
   });
 
   const scrapper = new InsScarpperImpl(browser);
