@@ -20,26 +20,23 @@ import { ResultModal } from './ResultModal';
 export function Scrap() {
   const {
     scrapTargets,
-    saveScrapTargetFromChangeEvent,
+    saveScrapTargets,
     makeNewTargets,
-    deleteScrapTarget,
+    hashTags,
+    urls,
+    setScrapTragetsFromPaste,
   } = useScrapTargets();
   const { requestScrap, isLoading, result } = useRequestScrap();
   const [showResult, setShowResult] = useState(false);
   const closeResult = () => setShowResult(false);
+
+  const scrap = () => requestScrap(hashTags, urls);
 
   useEffect(() => {
     if (result && !isLoading) {
       setShowResult(true);
     }
   }, [isLoading, result]);
-
-  const ref = useRef<HTMLTableRowElement>(null);
-  const scrollIntoLastElement = () => {
-    ref.current?.scrollIntoView(false);
-  };
-
-  useEffect(scrollIntoLastElement);
 
   return (
     <>
@@ -68,7 +65,7 @@ export function Scrap() {
           <Button
             flex="0.1"
             colorScheme="messenger"
-            onClick={() => requestScrap(scrapTargets)}
+            onClick={scrap}
             isLoading={isLoading}
           >
             스크랩
@@ -85,21 +82,24 @@ export function Scrap() {
                     </Th>
                     <Th width="30%">태그</Th>
                     <Th width="50%">포스트 URL</Th>
-                    <Th width="10%">삭제</Th>
                   </Tr>
                 </Thead>
                 <Tbody>
                   {scrapTargets.map((scrapTarget, index) => (
                     <ScrapTableRow
-                      key={scrapTarget.id}
+                      key={index}
                       index={index}
                       values={scrapTarget}
                       onFocus={() => makeNewTargets(index)}
-                      handleInput={(e) =>
-                        saveScrapTargetFromChangeEvent(index, e)
-                      }
-                      deleteRow={() => deleteScrapTarget(index)}
-                      ref={index + 1 === scrapTargets.length ? ref : null}
+                      handleInput={(x: number, value: string) => {
+                        saveScrapTargets([x, index], value);
+                      }}
+                      handlePaste={(
+                        x: number,
+                        e: React.ClipboardEvent<HTMLInputElement>
+                      ) => {
+                        setScrapTragetsFromPaste([x, index], e);
+                      }}
                     />
                   ))}
                 </Tbody>

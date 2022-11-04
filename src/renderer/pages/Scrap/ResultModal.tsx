@@ -14,13 +14,8 @@ import {
   Td,
   TableContainer,
   Button,
-  Badge,
 } from '@chakra-ui/react';
-import {
-  ScrapFailResult,
-  ScrapResult,
-  ScrapSuccessResult,
-} from 'main/scrapper/scrapperManager';
+import { ScrapResult } from 'main/scrapper/scrapperManager';
 import { invokeWithCustomErrors } from 'renderer/utils';
 
 interface Props {
@@ -36,10 +31,6 @@ export function ResultModal({ scrapResult, isOpen, onClose }: Props) {
 
   const openScreenshot = (path: string) => {
     invokeWithCustomErrors(() => window.api.OPEN_FILE(path));
-  };
-
-  const openPost = (path: string) => {
-    invokeWithCustomErrors(() => window.api.OPEN_URL(path));
   };
 
   return (
@@ -63,39 +54,18 @@ export function ResultModal({ scrapResult, isOpen, onClose }: Props) {
                 </Thead>
                 <Tbody>
                   {scrapResult?.map((result, index) => {
-                    const { keyword, postURL } = result;
+                    const { tag, screenshot } = result;
                     return (
                       <Tr key={index}>
-                        <Td>{keyword}</Td>
+                        <Td>{tag}</Td>
                         <Td>
                           <Button
                             variant="link"
-                            onClick={() => openPost(postURL)}
+                            onClick={() => openScreenshot(screenshot)}
                           >
-                            {postURL}
+                            {screenshot}
                           </Button>
                         </Td>
-                        <Td>
-                          <Badge
-                            colorScheme={
-                              isSuccessResult(result) ? 'green' : 'red'
-                            }
-                            fontSize="14px"
-                          >
-                            {isSuccessResult(result) ? '등록' : '미등록'}
-                          </Badge>
-                        </Td>
-                        <Td>
-                          {isSuccessResult(result) && (
-                            <Button
-                              variant="link"
-                              onClick={() => openScreenshot(result.screenshot)}
-                            >
-                              {result.screenshot}
-                            </Button>
-                          )}
-                        </Td>
-                        <Td>{isFailResult(result) && result.reason}</Td>
                       </Tr>
                     );
                   })}
@@ -113,8 +83,3 @@ export function ResultModal({ scrapResult, isOpen, onClose }: Props) {
     </>
   );
 }
-
-const isSuccessResult = (result: ScrapResult): result is ScrapSuccessResult =>
-  result.status === 'success';
-const isFailResult = (result: ScrapResult): result is ScrapFailResult =>
-  result.status === 'fail';

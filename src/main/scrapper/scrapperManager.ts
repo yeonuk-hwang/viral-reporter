@@ -1,26 +1,14 @@
 import * as path from 'path';
 import { InsScarpper } from './scrapper';
-import { ScrapTarget } from './types';
+import { HashTag, URL } from './types';
 import { isFulfilled, isRejected } from './util';
-import { CustomError } from '../errors';
 
 type observer = (percent: number) => void;
 
-interface ScrapResultBase {
-  status: 'success' | 'fail';
-  keyword: string;
-  postURL: string;
-}
-
-export interface ScrapSuccessResult extends ScrapResultBase {
+export type ScrapResult = {
+  tag: string;
   screenshot: string;
-}
-
-export interface ScrapFailResult extends ScrapResultBase {
-  reason: string;
-}
-
-export type ScrapResult = ScrapFailResult | ScrapSuccessResult;
+};
 
 export class ScrapperManager {
   private scrapper: InsScarpper;
@@ -39,37 +27,28 @@ export class ScrapperManager {
     await this.scrapper.login(userName, password);
   }
 
-  async scrap(scrapTargets: ScrapTarget[], screenshotDirectory: string) {
-    this.total = scrapTargets.length;
+  async scrap(hashTags: HashTag[], urls: URL[], screenshotDirectory: string) {
+    this.total = hashTags.length;
 
-    const scrapTasks = scrapTargets.map(({ keyword, url }, index) => {
+    const scrapTasks = hashTags.map((tag, index) => {
       return async (): Promise<ScrapResult> => {
         try {
-          const page = await this.scrapper.exploreHashTag(keyword);
-          const post = await this.scrapper.findPost(page, url);
+          const page = await this.scrapper.exploreHashTag(tag);
+          Promise.allSettled(
+            urls.map(async (url) => {
+              const post = await this.scrapper.findPost(page, url);
+              await this.scrapper.makeRedBorder(post);
+            })
+          );
           const screenshotPath = await this.scrapper.screenshot(
             page,
-            post,
-            path.join(screenshotDirectory, `/${index}_${keyword}.png`)
+            path.join(screenshotDirectory, `/${index + 1}_${tag}.png`)
           );
 
           return {
-            keyword,
-            postURL: url,
-            status: 'success',
+            tag,
             screenshot: screenshotPath,
           };
-        } catch (e) {
-          if (e instanceof CustomError) {
-            return {
-              keyword,
-              postURL: url,
-              status: 'fail',
-              reason: e.message,
-            };
-          }
-
-          throw e;
         } finally {
           this.current++;
           this.progress();
@@ -82,7 +61,7 @@ export class ScrapperManager {
     return results.map(this.handleSettledResult);
   }
 
-  private handleSettledResult(result: PromiseSettledResult<ScrapResultBase>) {
+  private handleSettledResult<T>(result: PromiseSettledResult<T>) {
     if (isRejected(result)) throw result.reason;
 
     if (isFulfilled(result)) return result.value;
