@@ -2,7 +2,7 @@ import { app, dialog, ipcMain, shell } from 'electron';
 import * as fs from 'fs';
 import { CHANNEL } from './channel';
 import { makeScrapper } from './scrapper';
-import { ScrapTarget } from './scrapper/types';
+import { HashTag, URL } from './scrapper/types';
 import { handleWithCustomErrors } from './util';
 
 export const bootstrap = async () => {
@@ -31,9 +31,12 @@ export const bootstrap = async () => {
     }
   );
 
-  handleWithCustomErrors(CHANNEL.SCRAP, (_, scrapTargets: ScrapTarget[]) => {
-    return scrapper.scrap(scrapTargets, app.getPath('downloads'));
-  });
+  handleWithCustomErrors(
+    CHANNEL.SCRAP,
+    (_, hashTags: HashTag[], urls: URL[]) => {
+      return scrapper.scrap(hashTags, urls, app.getPath('downloads'));
+    }
+  );
 
   handleWithCustomErrors(CHANNEL.OPEN_SCREENSHOT_DIRECTORY, () => {
     return shell.openPath(app.getPath('downloads'));

@@ -1,70 +1,79 @@
-import { ScrapResult } from 'main/scrapper/scrapperManager';
-import { ScrapTarget } from 'main/scrapper/types';
 import { useState } from 'react';
 
-interface ScrapTargetWithID extends ScrapTarget {
-  id: number;
-}
+type X = number;
+type Y = number;
+type Point = [X, Y];
 
 interface UseScrapTargetsReturn {
-  scrapTargets: ScrapTargetWithID[];
-  saveScrapTargetFromChangeEvent(
-    index: number,
-    event: React.ChangeEvent<HTMLInputElement>
-  ): void;
-  deleteScrapTarget(deleteIndex: number): void;
+  scrapTargets: string[][];
+  hashTags: string[];
+  urls: string[];
+  saveScrapTargets(point: Point, value: string): void;
   makeNewTargets(index: number): void;
+  setScrapTragetsFromPaste(
+    [startX, startY]: Point,
+    e: React.ClipboardEvent<HTMLInputElement>
+  ): void;
 }
 
 export const useScrapTargets = (): UseScrapTargetsReturn => {
-  const [scrapTargets, setScrapTragets] = useState<ScrapTargetWithID[]>(
-    makeInitialScrapTargets
-  );
+  const [scrapTargets, setScrapTragets] = useState(makeInitialScrapTargets);
 
-  const saveScrapTargets = (
-    index: number,
-    { name, value }: { name: keyof ScrapTarget; value: string }
-  ) => {
+  const saveScrapTargets = ([x, y]: Point, value: string) => {
     setScrapTragets((prev) => {
-      const nextScrapTargets = [...prev];
-      nextScrapTargets[index][name] = value;
-      return nextScrapTargets;
+      const result = [...prev];
+      result[y][x] = value;
+      return result;
     });
   };
 
-  const saveScrapTargetFromChangeEvent = (
-    index: number,
-    { target }: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const { name, value } = target;
-
-    saveScrapTargets(index, { name: name as keyof ScrapTarget, value });
-  };
-
-  const deleteScrapTarget = (deleteIndex: number) => {
-    setScrapTragets((prev) =>
-      prev.filter((_, currentIndex) => currentIndex !== deleteIndex)
-    );
-  };
-
   const makeNewTargets = (index: number) => {
-    if (scrapTargets[index + 1] === undefined) {
-      setScrapTragets((prev) => [...prev, { id: id++, keyword: '', url: '' }]);
+    if (index === scrapTargets.length - 1) {
+      setScrapTragets((prev) => [...prev, ['', '']]);
+    }
+  };
+
+  const hashTags = scrapTargets.map(([tag]) => tag).filter(Boolean);
+  const urls = scrapTargets.map(([_, url]) => url).filter(Boolean);
+
+  const setScrapTragetsFromPaste = (
+    [startX, startY]: Point,
+    e: React.ClipboardEvent<HTMLInputElement>
+  ) => {
+    const textData = e.clipboardData.getData('text');
+    const rows = textData.split('\n');
+    const isTextDataMultipleCell = rows.length > 1;
+
+    if (isTextDataMultipleCell) {
+      e.preventDefault();
+
+      const result = [...scrapTargets];
+
+      rows.forEach((row, copyY) => {
+        const cells = row.split('\t');
+        cells.forEach((cell, copyX) => {
+          if (!result[startY + copyY]) {
+            result[startY + copyY] = [];
+          }
+
+          result[startY + copyY][startX + copyX] = cell;
+        });
+      });
+
+      setScrapTragets(result);
     }
   };
 
   return {
     scrapTargets,
-    saveScrapTargetFromChangeEvent,
-    deleteScrapTarget,
+    saveScrapTargets,
     makeNewTargets,
+    setScrapTragetsFromPaste,
+    hashTags,
+    urls,
   };
 };
 
-let id = 0;
-
 const makeInitialScrapTargets = () => {
-  return new Array(3)
-    .fill({ keyword: '', url: '' })
-    .map((el) => ({ ...el, id: id++ }));
+  return new Array(40).fill(null).map(() => new Array(2).fill(''));
 };

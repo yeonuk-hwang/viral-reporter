@@ -15,11 +15,10 @@ interface InsScarpper {
     page: Page,
     postURL: URL
   ): Promise<puppeteer.ElementHandle<HTMLAnchorElement>>;
-  screenshot(
-    page: Page,
-    post: puppeteer.ElementHandle<HTMLAnchorElement>,
-    path: string
-  ): Promise<ScreenshotPath>;
+  makeRedBorder(
+    post: puppeteer.ElementHandle<HTMLAnchorElement>
+  ): Promise<void>;
+  screenshot(page: Page, path: string): Promise<ScreenshotPath>;
   close(): Promise<void>;
 }
 
@@ -107,13 +106,30 @@ class InsScarpperImpl implements InsScarpper {
 
   async screenshot(
     page: Page,
-    post: puppeteer.ElementHandle<HTMLAnchorElement>,
     screenshotPath: ScreenshotPath
   ): Promise<string> {
-    await this.makeRedBorder(post);
+    const header = await page.$(`section > main > header`);
+    const popular = await page.$('section > main > article > div');
+
+    if (!header || !popular) {
+      throw new Error('스크린샷 영역을 찾을 수 없습니다.');
+    }
+
+    const headerBox = await header.boundingBox();
+    const popularBox = await popular?.boundingBox();
+
+    if (!headerBox || !popularBox) {
+      throw new Error('스크린샷 영역을 찾을 수 없습니다.');
+    }
+
     await page.screenshot({
-      fullPage: true,
       path: screenshotPath,
+      clip: {
+        x: headerBox.x - 100,
+        y: headerBox.y,
+        width: popularBox.width + 200,
+        height: popularBox.y + popularBox.height,
+      },
     });
 
     page.close();
@@ -121,9 +137,7 @@ class InsScarpperImpl implements InsScarpper {
     return screenshotPath;
   }
 
-  private async makeRedBorder(
-    post: puppeteer.ElementHandle<HTMLAnchorElement>
-  ) {
+  async makeRedBorder(post: puppeteer.ElementHandle<HTMLAnchorElement>) {
     await post.evaluate((post) => {
       post.style.display = 'block';
       post.style.outline = 'solid 5px red';
