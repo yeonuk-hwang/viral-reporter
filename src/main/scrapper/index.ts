@@ -5,7 +5,6 @@ import { ScrapperManager } from './scrapperManager';
 export async function makeScrapper(executablePath?: string) {
   const browser = await puppeteer.launch({
     args: ['--disk-cache-size=0', '--lang=en-US', '--no-sandbox'],
-    headless: false,
     defaultViewport: null,
     executablePath,
   });

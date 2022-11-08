@@ -18,8 +18,8 @@ export default function App() {
     <ChakraProvider>
       <Router>
         <Routes>
-          {/* <Route path="/" element={<Login />} /> */}
-          <Route path="/" element={<Scrap />} />
+          <Route path="/" element={<Login />} />
+          <Route path="/scrap" element={<Scrap />} />
         </Routes>
       </Router>
     </ChakraProvider>
