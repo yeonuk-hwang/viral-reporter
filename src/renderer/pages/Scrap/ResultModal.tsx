@@ -46,10 +46,7 @@ export function ResultModal({ scrapResult, isOpen, onClose }: Props) {
                 <Thead>
                   <Tr>
                     <Th>키워드</Th>
-                    <Th>포스트 URL</Th>
-                    <Th>인기 게시물 등록 여부</Th>
                     <Th>스크린샷 경로</Th>
-                    <Th>비고</Th>
                   </Tr>
                 </Thead>
                 <Tbody>

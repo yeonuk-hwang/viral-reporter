@@ -128,7 +128,7 @@ class InsScarpperImpl implements InsScarpper {
         x: headerBox.x - 100,
         y: headerBox.y,
         width: popularBox.width + 200,
-        height: popularBox.y + popularBox.height,
+        height: popularBox.y + popularBox.height + 80,
       },
     });
 
