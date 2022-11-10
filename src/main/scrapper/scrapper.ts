@@ -74,6 +74,7 @@ class InsScarpperImpl implements InsScarpper {
     });
     await page.goto(encodeURI(this.URL.EXPLORE + tagName), {
       waitUntil: 'networkidle0',
+      timeout: 0,
     });
     return page;
   }
