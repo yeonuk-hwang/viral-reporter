@@ -9,9 +9,6 @@ export const API = {
   [CHANNEL.SCRAP]: (hashTags: HashTag[], urls: URL[]) =>
     ipcRenderer.invoke(CHANNEL.SCRAP, hashTags, urls),
 
-  [CHANNEL.OPEN_SCREENSHOT_DIRECTORY]: () =>
-    ipcRenderer.invoke(CHANNEL.OPEN_SCREENSHOT_DIRECTORY),
-
   [CHANNEL.OPEN_FILE]: (path: string) =>
     ipcRenderer.invoke(CHANNEL.OPEN_FILE, path),
 

@@ -26,7 +26,7 @@ export function Scrap() {
     urls,
     setScrapTragetsFromPaste,
   } = useScrapTargets();
-  const { requestScrap, isLoading, result } = useRequestScrap();
+  const { requestScrap, isLoading, result, screenShotDir } = useRequestScrap();
   const [showResult, setShowResult] = useState(false);
   const closeResult = () => setShowResult(false);
 
@@ -109,6 +109,7 @@ export function Scrap() {
         </Box>
       </Box>
       <ResultModal
+        screenShotDir={screenShotDir}
         scrapResult={result}
         isOpen={showResult}
         onClose={closeResult}

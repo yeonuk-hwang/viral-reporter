@@ -38,10 +38,6 @@ export const bootstrap = async () => {
     }
   );
 
-  handleWithCustomErrors(CHANNEL.OPEN_SCREENSHOT_DIRECTORY, () => {
-    return shell.openPath(app.getPath('downloads'));
-  });
-
   handleWithCustomErrors(CHANNEL.OPEN_FILE, (_, path: string) => {
     return shell.openPath(path);
   });

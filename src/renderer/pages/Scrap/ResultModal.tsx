@@ -14,19 +14,28 @@ import {
   Td,
   TableContainer,
   Button,
+  Badge,
 } from '@chakra-ui/react';
 import { ScrapResult } from 'main/scrapper/scrapperManager';
 import { invokeWithCustomErrors } from 'renderer/utils';
 
 interface Props {
   scrapResult: ScrapResult[] | null;
+  screenShotDir: string | null;
   isOpen: boolean;
   onClose: () => void;
 }
 
-export function ResultModal({ scrapResult, isOpen, onClose }: Props) {
+export function ResultModal({
+  scrapResult,
+  isOpen,
+  onClose,
+  screenShotDir,
+}: Props) {
   const openScreenshotDirectory = () => {
-    invokeWithCustomErrors(() => window.api.OPEN_SCREENSHOT_DIRECTORY());
+    if (screenShotDir) {
+      invokeWithCustomErrors(() => window.api.OPEN_FILE(screenShotDir));
+    }
   };
 
   const openScreenshot = (path: string) => {
@@ -46,22 +55,35 @@ export function ResultModal({ scrapResult, isOpen, onClose }: Props) {
                 <Thead>
                   <Tr>
                     <Th>키워드</Th>
+                    <Th>인기게시물 포함 여부</Th>
                     <Th>스크린샷 경로</Th>
                   </Tr>
                 </Thead>
                 <Tbody>
                   {scrapResult?.map((result, index) => {
-                    const { tag, screenshot } = result;
+                    const { tag, isPopularPostIncluded, screenshot } = result;
                     return (
                       <Tr key={index}>
                         <Td>{tag}</Td>
                         <Td>
-                          <Button
-                            variant="link"
-                            onClick={() => openScreenshot(screenshot)}
+                          <Badge
+                            colorScheme={
+                              isPopularPostIncluded ? 'green' : 'red'
+                            }
+                            fontSize="14px"
                           >
-                            {screenshot}
-                          </Button>
+                            {isPopularPostIncluded ? '포함' : '미포함'}
+                          </Badge>
+                        </Td>
+                        <Td>
+                          {screenshot && (
+                            <Button
+                              variant="link"
+                              onClick={() => openScreenshot(screenshot)}
+                            >
+                              {screenshot}
+                            </Button>
+                          )}
                         </Td>
                       </Tr>
                     );

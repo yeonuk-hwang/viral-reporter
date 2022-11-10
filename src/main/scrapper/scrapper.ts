@@ -84,7 +84,8 @@ class InsScarpperImpl implements InsScarpper {
   ): Promise<puppeteer.ElementHandle<HTMLAnchorElement>> {
     const postURLwithoutDomain = this.extractPostURL(postURL);
 
-    const post = await page.$(`a[href*="${postURLwithoutDomain}"]`);
+    const popularPostBox = await this.selectPopularPostBox(page);
+    const post = await popularPostBox.$(`a[href*="${postURLwithoutDomain}"]`);
 
     if (post !== null) {
       return post as puppeteer.ElementHandle<HTMLAnchorElement>;
@@ -104,31 +105,51 @@ class InsScarpperImpl implements InsScarpper {
     }
   }
 
+  private selectHeader = async (page: puppeteer.Page) => {
+    const header = await page.$(`section > main > header`);
+
+    if (header === null) {
+      throw new Error(
+        '해시태그 헤더 영역을 찾을 수 없습니다. 인스타그램 UI가 변경된 경우 이 에러가 발생할 수 있습니다.'
+      );
+    }
+
+    return header;
+  };
+
+  private selectPopularPostBox = async (page: puppeteer.Page) => {
+    const popularPostBox = await page.$('section > main > article > div');
+
+    if (popularPostBox === null) {
+      throw new Error(
+        '인기게시물 영역을 찾을 수 없습니다. 인스타그램 UI가 변경된 경우 이 에러가 발생할 수 있습니다.'
+      );
+    }
+
+    return popularPostBox;
+  };
+
   async screenshot(
     page: Page,
     screenshotPath: ScreenshotPath
   ): Promise<string> {
-    const header = await page.$(`section > main > header`);
-    const popular = await page.$('section > main > article > div');
+    const header = await this.selectHeader(page);
+    const popular = await this.selectPopularPostBox(page);
 
-    if (!header || !popular) {
-      throw new Error('스크린샷 영역을 찾을 수 없습니다.');
-    }
+    const headerBoxModel = await header.boxModel();
+    const popularPostBoxModel = await popular.boxModel();
 
-    const headerBox = await header.boundingBox();
-    const popularBox = await popular?.boundingBox();
-
-    if (!headerBox || !popularBox) {
+    if (!headerBoxModel || !popularPostBoxModel) {
       throw new Error('스크린샷 영역을 찾을 수 없습니다.');
     }
 
     await page.screenshot({
       path: screenshotPath,
       clip: {
-        x: headerBox.x - 100,
-        y: headerBox.y,
-        width: popularBox.width + 200,
-        height: popularBox.y + popularBox.height + 80,
+        x: headerBoxModel.margin[0].x,
+        y: headerBoxModel.margin[0].y,
+        width: headerBoxModel.margin[2].x - headerBoxModel.margin[0].x,
+        height: popularPostBoxModel.margin[2].y - headerBoxModel.margin[0].y,
       },
     });
 

@@ -1,4 +1,6 @@
 import * as path from 'path';
+import { mkdir } from 'fs/promises';
+import moment from 'moment';
 import { InsScarpper } from './scrapper';
 import { HashTag, URL } from './types';
 import { isFulfilled, isRejected } from './util';
@@ -7,7 +9,8 @@ type observer = (percent: number) => void;
 
 export type ScrapResult = {
   tag: string;
-  screenshot: string;
+  isPopularPostIncluded: boolean;
+  screenshot: string | null;
 };
 
 export class ScrapperManager {
@@ -30,25 +33,42 @@ export class ScrapperManager {
   async scrap(hashTags: HashTag[], urls: URL[], screenshotDirectory: string) {
     this.total = hashTags.length;
 
+    const currentTimeDirectory = path.join(
+      screenshotDirectory,
+      moment().format('YYYY-MM-DDTHH:mm:ss')
+    );
+
+    await mkdir(currentTimeDirectory);
+
     const scrapTasks = hashTags.map((tag, index) => {
       return async (): Promise<ScrapResult> => {
         try {
           const page = await this.scrapper.exploreHashTag(tag);
-          Promise.allSettled(
+          const findResults = await Promise.allSettled(
             urls.map(async (url) => {
               const post = await this.scrapper.findPost(page, url);
               await this.scrapper.makeRedBorder(post);
             })
           );
-          const screenshotPath = await this.scrapper.screenshot(
-            page,
-            path.join(screenshotDirectory, `/${index + 1}_${tag}.png`)
-          );
 
-          return {
-            tag,
-            screenshot: screenshotPath,
-          };
+          if (findResults.some(({ status }) => status === 'fulfilled')) {
+            const screenshotPath = await this.scrapper.screenshot(
+              page,
+              path.join(currentTimeDirectory, `/${index + 1}_${tag}.png`)
+            );
+
+            return {
+              tag,
+              isPopularPostIncluded: true,
+              screenshot: screenshotPath,
+            };
+          } else {
+            return {
+              tag,
+              isPopularPostIncluded: false,
+              screenshot: null,
+            };
+          }
         } finally {
           this.current++;
           this.progress();
@@ -58,7 +78,10 @@ export class ScrapperManager {
 
     const results = await Promise.allSettled(scrapTasks.map((task) => task()));
 
-    return results.map(this.handleSettledResult);
+    return {
+      directory: currentTimeDirectory,
+      result: results.map(this.handleSettledResult),
+    };
   }
 
   private handleSettledResult<T>(result: PromiseSettledResult<T>) {
