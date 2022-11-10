@@ -35,7 +35,7 @@ export class ScrapperManager {
 
     const currentTimeDirectory = path.join(
       screenshotDirectory,
-      moment().format('YYYY-MM-DDTHH:mm:ss')
+      moment().format('YYYY-MM-DDTHH-mm-ss')
     );
 
     await mkdir(currentTimeDirectory);
