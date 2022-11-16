@@ -96,7 +96,7 @@ class InsScarpperImpl implements InsScarpper {
   }
 
   private extractPostURL(postURL: URL): string {
-    const regexForFindPostURL = /p\/\w+\/?/;
+    const regexForFindPostURL = /p\/[\w-]+\/?/;
     const postURLwithoutDomain = postURL.match(regexForFindPostURL)?.[0];
 
     if (postURLwithoutDomain !== undefined) {
