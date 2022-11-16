@@ -1,7 +1,7 @@
 {
   "name": "instagram-popular-post-scrapper",
   "description": "instagram scrapper for popular post",
-  "version": "2.1.2",
+  "version": "2.1.3",
   "author": {
     "name": "Yeonuk Hwang",
     "email": "charlie.hwang131@gmail.com"
