@@ -6,19 +6,24 @@ import { HashTag, URL } from './scrapper/types';
 import { handleWithCustomErrors } from './util';
 
 export const bootstrap = async () => {
-  const CHROME_PATHS: Partial<Record<typeof process.platform, string>> = {
-    darwin: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
-    win32: 'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
+  const CHROME_PATHS: Partial<Record<typeof process.platform, string[]>> = {
+    darwin: ['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'],
+    win32: [
+      'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
+      'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
+    ],
   };
 
-  const browserPath = app.isPackaged
+  const browserPaths = app.isPackaged
     ? CHROME_PATHS[process.platform]
     : undefined;
 
-  if (browserPath && !fs.existsSync(browserPath)) {
+  const browserPath = browserPaths?.find((path) => fs.existsSync(path));
+
+  if (browserPath === undefined) {
     dialog.showErrorBox(
       '크롬이 설치되지 않았습니다',
-      `본 프로그램은 크롬이 필수적으로 설치되어 있어야 합니다. 현재 ${browserPath}에 크롬이 설치되어 있지 않은것으로 판단됩니다`
+      `본 프로그램은 크롬이 필수적으로 설치되어 있어야 합니다. 현재 ${browserPaths}에 크롬이 설치되어 있지 않은것으로 판단됩니다`
     );
   }
 
