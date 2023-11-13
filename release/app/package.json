@@ -1,7 +1,7 @@
 {
-  "name": "instagram-popular-post-scrapper",
+  "name": "viral-reporter",
   "version": "2.1.5",
-  "description": "instagram scrapper for popular post",
+  "description": "viral reporter for instagram and naver",
   "license": "MIT",
   "author": {
     "name": "Yeonuk Hwang",
