@@ -1,6 +1,6 @@
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
 import { ChakraProvider } from '@chakra-ui/react';
-import { Login, Scrap } from './pages';
+import { Login, Scrap, Home, Naver } from './pages';
 import { useEffect } from 'react';
 
 export default function App() {
@@ -18,8 +18,11 @@ export default function App() {
     <ChakraProvider>
       <Router>
         <Routes>
-          <Route path="/" element={<Login />} />
-          <Route path="/scrap" element={<Scrap />} />
+          <Route path="/" element={<Home />} />
+          <Route path="/naver" element={<Naver />} />
+          <Route path="/instagram" element={<Login />}>
+            <Route path="scrap" element={<Scrap />} />
+          </Route>
         </Routes>
       </Router>
     </ChakraProvider>
