@@ -1,4 +1,8 @@
 module.exports = {
+  plugins: ['import'],
+  extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended'],
+  parser: '@typescript-eslint/parser',
+  root: true,
   rules: {
     // A temporary hack related to IDE not resolving correct package.json
     'import/no-extraneous-dependencies': 'off',
@@ -7,6 +11,9 @@ module.exports = {
     // Since React 17 and typescript 4.1 you can safely disable the rule
     'react/react-in-jsx-scope': 'off',
     '@typescript-eslint/no-shadow': 'warn',
+  },
+  env: {
+    node: true,
   },
   parserOptions: {
     ecmaVersion: 2020,
