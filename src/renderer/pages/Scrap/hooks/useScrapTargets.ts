@@ -46,35 +46,33 @@ export const useScrapTargets = (): UseScrapTargetsReturn => {
     [startX, startY]: Point,
     e: React.ClipboardEvent<HTMLInputElement>
   ) => {
+    e.preventDefault();
+
     const textData = e.clipboardData.getData('text');
     const rows = textData.split('\n');
-    const isTextDataMultipleCell = rows.length > 1;
 
-    if (isTextDataMultipleCell) {
-      e.preventDefault();
+    const result = [...scrapTargets];
 
-      const result = [...scrapTargets];
+    rows.forEach((row, yRelativeCoordinateOfRow) => {
+      const cells = row.split('\t');
+      const yAbsoluteCoordinateOfRow = startY + yRelativeCoordinateOfRow;
 
-      rows.forEach((row, xRelativeCoordinateOfRow) => {
-        const cells = row.split('\t');
-        const xAbsoluteCoordinateOfRow = startY + xRelativeCoordinateOfRow;
+      const rowDoesNotExist = !result[yAbsoluteCoordinateOfRow];
 
-        const doesRowNotExist = !result[xAbsoluteCoordinateOfRow];
-        function makeNewRow() {
-          result[xAbsoluteCoordinateOfRow] = ['', ''];
-        }
+      if (rowDoesNotExist) {
+        (function makeNewRow() {
+          result[yAbsoluteCoordinateOfRow] = ['', ''];
+        })();
+      }
 
-        if (doesRowNotExist) makeNewRow();
+      cells.forEach((cell, xRelativeCoordinateOfCell) => {
+        const xAbsoluteCoordinateOfCell = startX + xRelativeCoordinateOfCell;
 
-        cells.forEach((cell, yRelativeCoordinateOfCell) => {
-          const yAbsoluteCoordinateOfCell = startX + yRelativeCoordinateOfCell;
-
-          result[xAbsoluteCoordinateOfRow][yAbsoluteCoordinateOfCell] = cell;
-        });
+        result[yAbsoluteCoordinateOfRow][xAbsoluteCoordinateOfCell] = cell;
       });
+    });
 
-      setScrapTragets(result);
-    }
+    setScrapTragets(result);
   };
 
   return {
