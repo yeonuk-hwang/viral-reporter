@@ -91,7 +91,7 @@ export function Scrap() {
                       index={index}
                       values={scrapTarget}
                       onFocus={() => makeNewTargets(index)}
-                      handleInput={(x: number, value: string) => {
+                      handleChange={(x: number, value: string) => {
                         saveScrapTargets([x, index], value);
                       }}
                       handlePaste={(
