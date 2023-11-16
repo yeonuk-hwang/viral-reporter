@@ -1,12 +1,12 @@
 import { contextBridge, ipcRenderer } from 'electron';
 import { CHANNEL } from './channel';
-import { HashTag, URL } from './scrapper/types';
+import { Keyword, URL } from './scrapper/types';
 
 export const API = {
   [CHANNEL.LOGIN]: (userInfo: { userName: string; password: string }) =>
     ipcRenderer.invoke(CHANNEL.LOGIN, userInfo),
 
-  [CHANNEL.SCRAP]: (hashTags: HashTag[], urls: URL[]) =>
+  [CHANNEL.SCRAP]: (hashTags: Keyword[], urls: URL[]) =>
     ipcRenderer.invoke(CHANNEL.SCRAP, hashTags, urls),
 
   [CHANNEL.OPEN_FILE]: (path: string) =>
