@@ -1,3 +1,5 @@
+import { warn } from 'console';
+import { Keyword, URL } from 'main/scrapper/types';
 import { useState } from 'react';
 
 type X = number;
@@ -5,7 +7,7 @@ type Y = number;
 type Point = [X, Y];
 
 interface UseScrapTargetsReturn {
-  scrapTargets: string[][];
+  scrapTargets: [Keyword, URL][];
   hashTags: string[];
   urls: string[];
   saveScrapTargets(point: Point, value: string): void;
@@ -17,20 +19,24 @@ interface UseScrapTargetsReturn {
 }
 
 export const useScrapTargets = (): UseScrapTargetsReturn => {
-  const [scrapTargets, setScrapTragets] = useState(makeInitialScrapTargets);
+  const [scrapTargets, setScrapTragets] = useState<[Keyword, URL][]>(
+    makeInitialScrapTargets
+  );
 
   const saveScrapTargets = ([x, y]: Point, value: string) => {
     setScrapTragets((prev) => {
       const result = [...prev];
       result[y][x] = value;
+
       return result;
     });
   };
 
   const makeNewTargets = (index: number) => {
-    if (index === scrapTargets.length - 1) {
-      setScrapTragets((prev) => [...prev, ['', '']]);
-    }
+    const isLastItem = index === scrapTargets.length - 1;
+    const addOneMoreRow = () => setScrapTragets((prev) => [...prev, ['', '']]);
+
+    if (isLastItem) return addOneMoreRow();
   };
 
   const hashTags = scrapTargets.map(([tag]) => tag).filter(Boolean);
@@ -49,14 +55,21 @@ export const useScrapTargets = (): UseScrapTargetsReturn => {
 
       const result = [...scrapTargets];
 
-      rows.forEach((row, copyY) => {
+      rows.forEach((row, xRelativeCoordinateOfRow) => {
         const cells = row.split('\t');
-        cells.forEach((cell, copyX) => {
-          if (!result[startY + copyY]) {
-            result[startY + copyY] = [];
-          }
+        const xAbsoluteCoordinateOfRow = startY + xRelativeCoordinateOfRow;
 
-          result[startY + copyY][startX + copyX] = cell;
+        const doesRowNotExist = !result[xAbsoluteCoordinateOfRow];
+        function makeNewRow() {
+          result[xAbsoluteCoordinateOfRow] = ['', ''];
+        }
+
+        if (doesRowNotExist) makeNewRow();
+
+        cells.forEach((cell, yRelativeCoordinateOfCell) => {
+          const yAbsoluteCoordinateOfCell = startX + yRelativeCoordinateOfCell;
+
+          result[xAbsoluteCoordinateOfRow][yAbsoluteCoordinateOfCell] = cell;
         });
       });
 
@@ -74,6 +87,6 @@ export const useScrapTargets = (): UseScrapTargetsReturn => {
   };
 };
 
-const makeInitialScrapTargets = () => {
-  return new Array(40).fill(null).map(() => new Array(2).fill(''));
+const makeInitialScrapTargets = (): [Keyword, URL][] => {
+  return new Array(40).fill(null).map(() => ['', '']);
 };
