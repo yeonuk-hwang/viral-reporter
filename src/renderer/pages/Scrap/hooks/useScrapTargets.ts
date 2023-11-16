@@ -1,4 +1,3 @@
-import { warn } from 'console';
 import { Keyword, URL } from 'main/scrapper/types';
 import { useState } from 'react';
 
@@ -8,7 +7,7 @@ type Point = [X, Y];
 
 interface UseScrapTargetsReturn {
   scrapTargets: [Keyword, URL][];
-  hashTags: string[];
+  keywords: string[];
   urls: string[];
   saveScrapTargets(point: Point, value: string): void;
   makeNewTargets(index: number): void;
@@ -39,7 +38,7 @@ export const useScrapTargets = (): UseScrapTargetsReturn => {
     if (isLastItem) return addOneMoreRow();
   };
 
-  const hashTags = scrapTargets.map(([tag]) => tag).filter(Boolean);
+  const keywords = scrapTargets.map(([tag]) => tag).filter(Boolean);
   const urls = scrapTargets.map(([_, url]) => url).filter(Boolean);
 
   const setScrapTragetsFromPaste = (
@@ -80,7 +79,7 @@ export const useScrapTargets = (): UseScrapTargetsReturn => {
     saveScrapTargets,
     makeNewTargets,
     setScrapTragetsFromPaste,
-    hashTags,
+    keywords,
     urls,
   };
 };
