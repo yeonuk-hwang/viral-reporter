@@ -1,4 +1,4 @@
-/* eslint global-require: off, no-console: off, promise/always-return: off */
+/* eslint-disable @typescript-eslint/no-var-requires */
 
 import path from 'path';
 import { app, BrowserWindow, dialog, shell } from 'electron';
