@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Box,
   Button,
@@ -22,7 +22,7 @@ export function Scrap() {
     scrapTargets,
     saveScrapTargets,
     makeNewTargets,
-    hashTags,
+    keywords,
     urls,
     setScrapTragetsFromPaste,
   } = useScrapTargets();
@@ -30,7 +30,7 @@ export function Scrap() {
   const [showResult, setShowResult] = useState(false);
   const closeResult = () => setShowResult(false);
 
-  const scrap = () => requestScrap(hashTags, urls);
+  const scrap = () => requestScrap(keywords, urls);
 
   useEffect(() => {
     if (result && !isLoading) {
