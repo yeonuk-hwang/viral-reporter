@@ -1,8 +1,8 @@
 import { app, dialog, ipcMain, shell } from 'electron';
 import * as fs from 'fs';
 import { CHANNEL } from './channel';
-import { makeScrapper } from './scrapper';
-import { Keyword, URL } from './scrapper/types';
+import { makeScrapper } from './instagram';
+import { Keyword, URL } from './instagram/types';
 import { handleWithCustomErrors } from './util';
 
 export const bootstrap = async () => {
