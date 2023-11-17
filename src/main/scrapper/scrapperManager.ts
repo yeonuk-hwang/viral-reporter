@@ -2,7 +2,7 @@ import * as path from 'path';
 import { mkdir } from 'fs/promises';
 import moment from 'moment';
 import { InsScarpper } from './scrapper';
-import { HashTag, URL } from './types';
+import { Keyword, URL } from './types';
 import { isFulfilled, isRejected } from './util';
 
 type observer = (percent: number) => void;
@@ -30,7 +30,7 @@ export class ScrapperManager {
     await this.scrapper.login(userName, password);
   }
 
-  async scrap(hashTags: HashTag[], urls: URL[], screenshotDirectory: string) {
+  async scrap(hashTags: Keyword[], urls: URL[], screenshotDirectory: string) {
     this.total = hashTags.length;
 
     const currentTimeDirectory = path.join(
