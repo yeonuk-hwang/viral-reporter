@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Box,
   Button,
@@ -21,8 +21,8 @@ export function Scrap() {
   const {
     scrapTargets,
     saveScrapTargets,
-    makeNewTargets,
-    hashTags,
+    appendNewRow,
+    keywords,
     urls,
     setScrapTragetsFromPaste,
   } = useScrapTargets();
@@ -30,7 +30,15 @@ export function Scrap() {
   const [showResult, setShowResult] = useState(false);
   const closeResult = () => setShowResult(false);
 
-  const scrap = () => requestScrap(hashTags, urls);
+  const scrap = () => requestScrap(keywords, urls);
+
+  const appendNewRowIfItIsLastRow = (yCoordinateOfRow: number) => {
+    const isLastRow = yCoordinateOfRow === scrapTargets.length - 1;
+
+    if (isLastRow) {
+      appendNewRow();
+    }
+  };
 
   useEffect(() => {
     if (result && !isLoading) {
@@ -85,20 +93,20 @@ export function Scrap() {
                   </Tr>
                 </Thead>
                 <Tbody>
-                  {scrapTargets.map((scrapTarget, index) => (
+                  {scrapTargets.map((scrapTarget, yCoordinate) => (
                     <ScrapTableRow
-                      key={index}
-                      index={index}
+                      key={yCoordinate}
+                      index={yCoordinate}
                       values={scrapTarget}
-                      onFocus={() => makeNewTargets(index)}
-                      handleInput={(x: number, value: string) => {
-                        saveScrapTargets([x, index], value);
+                      onFocus={() => appendNewRowIfItIsLastRow(yCoordinate)}
+                      handleChange={(xCoordinate: number, value: string) => {
+                        saveScrapTargets([xCoordinate, yCoordinate], value);
                       }}
                       handlePaste={(
-                        x: number,
+                        xCoordinate: number,
                         e: React.ClipboardEvent<HTMLInputElement>
                       ) => {
-                        setScrapTragetsFromPaste([x, index], e);
+                        setScrapTragetsFromPaste([xCoordinate, yCoordinate], e);
                       }}
                     />
                   ))}

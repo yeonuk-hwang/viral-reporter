@@ -4,22 +4,25 @@ import React from 'react';
 interface ScrapTableRowProps {
   index: number;
   onFocus: () => void;
-  values: string[];
-  handleInput: (x: number, value: string) => void;
-  handlePaste: (x: number, e: React.ClipboardEvent<HTMLInputElement>) => void;
+  values: [keyword: string, url: string];
+  handleChange: (xCoordinate: number, value: string) => void;
+  handlePaste: (
+    columnIndex: number,
+    e: React.ClipboardEvent<HTMLInputElement>
+  ) => void;
 }
 
 export const ScrapTableRow: React.FC<ScrapTableRowProps> = ({
   index,
   onFocus,
-  handleInput,
+  handleChange,
   handlePaste,
   values,
 }) => {
-  const [hastTag, url] = values;
+  const [keyword, url] = values;
 
-  const inputAttr = [
-    { type: 'text', value: hastTag },
+  const columns = [
+    { type: 'text', value: keyword },
     { type: 'url', value: url },
   ];
 
@@ -28,14 +31,15 @@ export const ScrapTableRow: React.FC<ScrapTableRowProps> = ({
       <Td isNumeric>
         <Text fontWeight="semibold">{index + 1}</Text>
       </Td>
-      {inputAttr.map((attr, index) => {
+      {columns.map(({ type, value }, xCoordinate) => {
         return (
-          <Td key={index}>
+          <Td key={xCoordinate}>
             <Input
-              {...attr}
+              type={type}
+              value={value}
               onFocus={onFocus}
-              onChange={(e) => handleInput(index, e.target.value)}
-              onPaste={(e) => handlePaste(index, e)}
+              onChange={(e) => handleChange(xCoordinate, e.target.value)}
+              onPaste={(e) => handlePaste(xCoordinate, e)}
             />
           </Td>
         );
