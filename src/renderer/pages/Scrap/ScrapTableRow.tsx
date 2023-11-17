@@ -5,7 +5,7 @@ interface ScrapTableRowProps {
   index: number;
   onFocus: () => void;
   values: [keyword: string, url: string];
-  handleChange: (columnIndex: number, value: string) => void;
+  handleChange: (xCoordinate: number, value: string) => void;
   handlePaste: (
     columnIndex: number,
     e: React.ClipboardEvent<HTMLInputElement>
@@ -31,15 +31,15 @@ export const ScrapTableRow: React.FC<ScrapTableRowProps> = ({
       <Td isNumeric>
         <Text fontWeight="semibold">{index + 1}</Text>
       </Td>
-      {columns.map(({ type, value }, columnIndex) => {
+      {columns.map(({ type, value }, xCoordinate) => {
         return (
-          <Td key={columnIndex}>
+          <Td key={xCoordinate}>
             <Input
               type={type}
               value={value}
               onFocus={onFocus}
-              onChange={(e) => handleChange(columnIndex, e.target.value)}
-              onPaste={(e) => handlePaste(columnIndex, e)}
+              onChange={(e) => handleChange(xCoordinate, e.target.value)}
+              onPaste={(e) => handlePaste(xCoordinate, e)}
             />
           </Td>
         );
