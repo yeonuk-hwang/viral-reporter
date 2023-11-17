@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { ScrapResult } from 'main/scrapper/scrapperManager';
+import { ScrapResult } from 'main/instagram/scrapperManager';
 import { invokeWithCustomErrors } from 'renderer/utils';
-import { Keyword, URL } from 'main/scrapper/types';
+import { Keyword, URL } from 'main/instagram/types';
 
 interface UseRequestScrapResult {
   requestScrap(hashTags: Keyword[], urls: URL[]): void;

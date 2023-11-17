@@ -1,6 +1,6 @@
 import { contextBridge, ipcRenderer } from 'electron';
 import { CHANNEL } from './channel';
-import { Keyword, URL } from './scrapper/types';
+import { Keyword, URL } from './instagram//types';
 
 export const API = {
   [CHANNEL.LOGIN]: (userInfo: { userName: string; password: string }) =>

@@ -1,4 +1,4 @@
-import { Keyword, URL } from 'main/scrapper/types';
+import { Keyword, URL } from 'main/instagram/types';
 import { useState } from 'react';
 
 type X = number;
