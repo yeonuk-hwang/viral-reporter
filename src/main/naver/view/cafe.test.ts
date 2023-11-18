@@ -1,3 +1,5 @@
+import * as path from 'path';
+import * as fs from 'fs';
 import { NaverViewService } from '.';
 import { NaverFactory } from './naverFactory';
 
@@ -45,6 +47,22 @@ test('cafe service should make red border to a given post', async () => {
   expect(post.evaluate((post) => post.style.outline)).resolves.toBe(
     'red solid 5px'
   );
+});
+
+test('cafe service should be able to screenshot popular post page', async () => {
+  const cafeService = setUp();
+
+  const searchPage = await cafeService.search(SEARCH_TERM);
+
+  const post = await cafeService.findPost(searchPage, TOP_10_POST);
+
+  await cafeService.makeRedBorder(post);
+
+  const TEST_SCREENSHOT_PATH = path.join(process.cwd(), 'test_screenshot');
+
+  const screenShotFilePath = cafeService.screenshot(page, TEST_SCREENSHOT_PATH);
+
+  expect(fs.existsSync(screenShotFilePath)).toBeTrue();
 });
 
 function setUp(): NaverViewService {
