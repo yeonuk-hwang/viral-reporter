@@ -1,9 +1,10 @@
-import { NaverViewService, NaverViewServiceImpl } from '.';
+import { NaverViewService } from '.';
+import { NaverFactory } from './naverFactory';
 
 jest.setTimeout(100000);
 
 test('blog service should search for blogs on naver with a given search term', async () => {
-  const blogService = await setUp();
+  const blogService = setUp();
 
   const page = await blogService.search(SEARCH_TERM);
 
@@ -13,7 +14,7 @@ test('blog service should search for blogs on naver with a given search term', a
 });
 
 test('blog service should return post if a given post is in the top 10 posts', async () => {
-  const blogService = await setUp();
+  const blogService = setUp();
 
   const searchPage = await blogService.search(SEARCH_TERM);
 
@@ -23,7 +24,7 @@ test('blog service should return post if a given post is in the top 10 posts', a
 });
 
 test('blog service should throw Error if a given post is not in the top 10 posts', async () => {
-  const blogService = await setUp();
+  const blogService = setUp();
 
   const searchPage = await blogService.search(SEARCH_TERM);
 
@@ -32,13 +33,8 @@ test('blog service should throw Error if a given post is not in the top 10 posts
   ).rejects.toThrow('포스트가 존재하지 않습니다.');
 });
 
-async function setUp(): Promise<NaverViewService> {
-  const NAVER_BLOG_VIEW_URL =
-    'https://search.naver.com/search.naver?where=blog';
-
-  const blogService = new NaverViewServiceImpl(browser, NAVER_BLOG_VIEW_URL);
-
-  return blogService;
+function setUp(): NaverViewService {
+  return NaverFactory.createBlogService(browser);
 }
 
 const SEARCH_TERM = 'SK매직';
