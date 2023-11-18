@@ -1,3 +1,6 @@
+import * as path from 'path';
+import * as fs from 'fs';
+import moment from 'moment';
 import { NaverViewService } from '.';
 import { NaverFactory } from './naverFactory';
 
@@ -45,6 +48,33 @@ test('blog service should make red border to a given post', async () => {
   expect(post.evaluate((post) => post.style.outline)).resolves.toBe(
     'red solid 5px'
   );
+});
+
+test('blog service should be able to screenshot popular post page', async () => {
+  const blogService = setUp();
+
+  const searchPage = await blogService.search(SEARCH_TERM);
+
+  const post = await blogService.findPost(searchPage, TOP_10_POST);
+
+  await blogService.makeRedBorder(post);
+
+  const TEST_SCREENSHOT_DIRECTORY = path.join(process.cwd(), 'test_screenshot');
+
+  if (!fs.existsSync(TEST_SCREENSHOT_DIRECTORY))
+    fs.mkdirSync(TEST_SCREENSHOT_DIRECTORY);
+
+  const TEST_SCREENSHOT_PATH = path.join(
+    TEST_SCREENSHOT_DIRECTORY,
+    'blog search result screenshot' + moment().format('YYYY-MM-DDTHH-mm-ss')
+  );
+
+  const screenShotFilePath = await blogService.screenshot(
+    searchPage,
+    TEST_SCREENSHOT_PATH
+  );
+
+  expect(fs.existsSync(screenShotFilePath)).toBe(true);
 });
 
 function setUp(): NaverViewService {
