@@ -1,9 +1,10 @@
-import { NaverViewService, NaverViewServiceImpl } from '.';
+import { NaverViewService } from '.';
+import { NaverFactory } from './naverFactory';
 
 jest.setTimeout(100000);
 
 test('cafe service should search for cafes on naver with a given search term', async () => {
-  const cafeService = await setUp();
+  const cafeService = setUp();
 
   const page = await cafeService.search(SEARCH_TERM);
 
@@ -13,7 +14,7 @@ test('cafe service should search for cafes on naver with a given search term', a
 });
 
 test('cafe service should return post if a given post is in the top 10 posts', async () => {
-  const cafeService = await setUp();
+  const cafeService = setUp();
 
   const searchPage = await cafeService.search(SEARCH_TERM);
 
@@ -23,7 +24,7 @@ test('cafe service should return post if a given post is in the top 10 posts', a
 });
 
 test('cafe service should throw Error if a given post is not in the top 10 posts', async () => {
-  const cafeService = await setUp();
+  const cafeService = setUp();
 
   const searchPage = await cafeService.search(SEARCH_TERM);
 
@@ -32,13 +33,8 @@ test('cafe service should throw Error if a given post is not in the top 10 posts
   ).rejects.toThrow('포스트가 존재하지 않습니다.');
 });
 
-async function setUp(): Promise<NaverViewService> {
-  const NAVER_CAFE_VIEW_URL =
-    'https://search.naver.com/search.naver?where=article';
-
-  const cafeService = new NaverViewServiceImpl(browser, NAVER_CAFE_VIEW_URL);
-
-  return cafeService;
+function setUp(): NaverViewService {
+  return NaverFactory.createCafeService(browser);
 }
 
 const SEARCH_TERM = '롯데 기프트카드';
