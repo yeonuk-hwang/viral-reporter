@@ -33,6 +33,20 @@ test('blog service should throw Error if a given post is not in the top 10 posts
   ).rejects.toThrow('포스트가 존재하지 않습니다.');
 });
 
+test('blog service should make red border to a given post', async () => {
+  const blogService = setUp();
+
+  const searchPage = await blogService.search(SEARCH_TERM);
+
+  const post = await blogService.findPost(searchPage, TOP_10_POST);
+
+  await blogService.makeRedBorder(post);
+
+  expect(post.evaluate((post) => post.style.outline)).resolves.toBe(
+    'red solid 5px'
+  );
+});
+
 function setUp(): NaverViewService {
   return NaverFactory.createBlogService(browser);
 }
