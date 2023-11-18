@@ -1,12 +1,18 @@
 import { Browser, ElementHandle, Page } from 'puppeteer';
 
+type ScreenshotFilePath = string;
+
 export interface NaverViewService {
   search(keyword: string): Promise<Page>;
   findPost(
-    searchPage: Page,
+    $searchPage: Page,
     postURL: string
   ): Promise<ElementHandle<HTMLLIElement>>;
-  makeRedBorder(post: ElementHandle<HTMLLIElement>): Promise<void>;
+  makeRedBorder($element: ElementHandle<HTMLElement>): Promise<void>;
+  screenshot(
+    $searchPage: Page,
+    screenshotDirectoryPath: string
+  ): Promise<ScreenshotFilePath>;
   close(): Promise<void>;
 }
 
@@ -62,10 +68,39 @@ export class NaverViewServiceImpl implements NaverViewService {
     }
   }
 
-  makeRedBorder(post: ElementHandle<HTMLLIElement>): Promise<void> {
-    return post.evaluate((post) => {
-      post.style.outline = 'red solid 5px';
+  makeRedBorder($element: ElementHandle<HTMLElement>): Promise<void> {
+    return $element.evaluate(($post) => {
+      $post.style.outline = 'red solid 5px';
     });
+  }
+
+  async screenshot(
+    $searchPage: Page,
+    screenshotPath: string
+  ): Promise<ScreenshotFilePath> {
+    const screenshotPathWithFileExtension = screenshotPath + '.png';
+
+    const $postList = await this.findPostList($searchPage);
+    const $tenthPost = await $postList.$('li:nth-child(10)');
+
+    await this.makeBorderForCategory($searchPage);
+
+    const boxModelOfTenthPost = await $tenthPost?.boxModel();
+    const boxModelOfPostList = await $postList?.boxModel();
+
+    if (!boxModelOfTenthPost || !boxModelOfPostList) throw new Error('');
+
+    await $searchPage.screenshot({
+      path: screenshotPathWithFileExtension,
+      clip: {
+        x: 0,
+        y: 0,
+        width: boxModelOfPostList.margin[2].x,
+        height: boxModelOfTenthPost.margin[2].y + 10,
+      },
+    });
+
+    return screenshotPathWithFileExtension;
   }
 
   async close() {
@@ -96,5 +131,19 @@ export class NaverViewServiceImpl implements NaverViewService {
     }
 
     return posts.slice(0, 10);
+  }
+
+  private async makeBorderForCategory($searchPage: Page) {
+    const category = new URL($searchPage.url()).searchParams.get('where');
+
+    const $categoryArea = await $searchPage.$(`a[href*="where=${category}"]`);
+
+    if (!$categoryArea) {
+      throw new Error(
+        'View 검색 결과 카테고리 영역을 찾을 수 없습니다. 네이버 View UI가 변경된 경우 이 에러가 발생할 수 있습니다.'
+      );
+    }
+
+    this.makeRedBorder($categoryArea);
   }
 }
