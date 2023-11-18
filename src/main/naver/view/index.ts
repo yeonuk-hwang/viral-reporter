@@ -61,7 +61,7 @@ export class NaverViewServiceImpl implements NaverViewService {
     }
   }
 
-  async findPostList(
+  private async findPostList(
     $searchPage: Page
   ): Promise<ElementHandle<HTMLUListElement>> {
     const $postList = await $searchPage.$('ul.lst_view');
@@ -75,7 +75,7 @@ export class NaverViewServiceImpl implements NaverViewService {
     return $postList;
   }
 
-  async findTop10Posts($postList: ElementHandle<HTMLUListElement>) {
+  private async findTop10Posts($postList: ElementHandle<HTMLUListElement>) {
     const posts = await $postList.$$('li');
 
     if (posts.length === 0) {
