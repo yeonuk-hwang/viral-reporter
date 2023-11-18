@@ -61,6 +61,10 @@ export class NaverViewServiceImpl implements NaverViewService {
     }
   }
 
+  async close() {
+    return this.browser.close();
+  }
+
   private async findPostList(
     $searchPage: Page
   ): Promise<ElementHandle<HTMLUListElement>> {
@@ -85,9 +89,5 @@ export class NaverViewServiceImpl implements NaverViewService {
     }
 
     return posts.slice(0, 10);
-  }
-
-  async close() {
-    return this.browser.close();
   }
 }
