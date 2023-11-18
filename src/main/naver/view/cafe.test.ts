@@ -33,6 +33,20 @@ test('cafe service should throw Error if a given post is not in the top 10 posts
   ).rejects.toThrow('포스트가 존재하지 않습니다.');
 });
 
+test('cafe service should make red border to a given post', async () => {
+  const cafeService = setUp();
+
+  const searchPage = await cafeService.search(SEARCH_TERM);
+
+  const post = await cafeService.findPost(searchPage, TOP_10_POST);
+
+  await cafeService.makeRedBorder(post);
+
+  expect(post.evaluate((post) => post.style.outline)).resolves.toBe(
+    'red solid 5px'
+  );
+});
+
 function setUp(): NaverViewService {
   return NaverFactory.createCafeService(browser);
 }

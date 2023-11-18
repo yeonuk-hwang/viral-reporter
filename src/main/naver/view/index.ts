@@ -6,6 +6,7 @@ export interface NaverViewService {
     searchPage: Page,
     postURL: string
   ): Promise<ElementHandle<HTMLLIElement>>;
+  makeRedBorder(post: ElementHandle<HTMLLIElement>): Promise<void>;
   close(): Promise<void>;
 }
 
@@ -59,6 +60,12 @@ export class NaverViewServiceImpl implements NaverViewService {
     ) {
       return value !== null;
     }
+  }
+
+  makeRedBorder(post: ElementHandle<HTMLLIElement>): Promise<void> {
+    return post.evaluate((post) => {
+      post.style.outline = 'red solid 5px';
+    });
   }
 
   async close() {
