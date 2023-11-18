@@ -1,4 +1,5 @@
 import * as path from 'path';
+import moment from 'moment';
 import * as fs from 'fs';
 import { NaverViewService } from '.';
 import { NaverFactory } from './naverFactory';
@@ -58,11 +59,22 @@ test('cafe service should be able to screenshot popular post page', async () => 
 
   await cafeService.makeRedBorder(post);
 
-  const TEST_SCREENSHOT_PATH = path.join(process.cwd(), 'test_screenshot');
+  const TEST_SCREENSHOT_DIRECTORY = path.join(process.cwd(), 'test_screenshot');
 
-  const screenShotFilePath = cafeService.screenshot(page, TEST_SCREENSHOT_PATH);
+  if (!fs.existsSync(TEST_SCREENSHOT_DIRECTORY))
+    fs.mkdirSync(TEST_SCREENSHOT_DIRECTORY);
 
-  expect(fs.existsSync(screenShotFilePath)).toBeTrue();
+  const TEST_SCREENSHOT_PATH = path.join(
+    TEST_SCREENSHOT_DIRECTORY,
+    moment().format('YYYY-MM-DDTHH-mm-ss')
+  );
+
+  const screenShotFilePath = await cafeService.screenshot(
+    searchPage,
+    TEST_SCREENSHOT_PATH
+  );
+
+  expect(fs.existsSync(screenShotFilePath)).toBe(true);
 });
 
 function setUp(): NaverViewService {
