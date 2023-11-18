@@ -1,6 +1,6 @@
 import * as path from 'path';
-import moment from 'moment';
 import * as fs from 'fs';
+import moment from 'moment';
 import { NaverViewService } from '.';
 import { NaverFactory } from './naverFactory';
 
@@ -66,7 +66,7 @@ test('cafe service should be able to screenshot popular post page', async () => 
 
   const TEST_SCREENSHOT_PATH = path.join(
     TEST_SCREENSHOT_DIRECTORY,
-    moment().format('YYYY-MM-DDTHH-mm-ss')
+    'cafe search result screenshot' + moment().format('YYYY-MM-DDTHH-mm-ss')
   );
 
   const screenShotFilePath = await cafeService.screenshot(
