@@ -1,4 +1,4 @@
-import { Browser, ElementHandle, Page } from 'puppeteer';
+import { Browser, ElementHandle, Page, ScreenshotClip } from 'puppeteer';
 
 type ScreenshotFilePath = string;
 
@@ -78,26 +78,14 @@ export class NaverViewServiceImpl implements NaverViewService {
     $searchPage: Page,
     screenshotPath: string
   ): Promise<ScreenshotFilePath> {
-    const screenshotPathWithFileExtension = screenshotPath + '.png';
-
-    const $postList = await this.findPostList($searchPage);
-    const $tenthPost = await $postList.$('li:nth-child(10)');
-
     await this.makeBorderForCategory($searchPage);
 
-    const boxModelOfTenthPost = await $tenthPost?.boxModel();
-    const boxModelOfPostList = await $postList?.boxModel();
-
-    if (!boxModelOfTenthPost || !boxModelOfPostList) throw new Error('');
+    const screenshotPathWithFileExtension = screenshotPath + '.png';
+    const screenshotClip = await this.getScreenshotClip($searchPage);
 
     await $searchPage.screenshot({
       path: screenshotPathWithFileExtension,
-      clip: {
-        x: 0,
-        y: 0,
-        width: boxModelOfPostList.margin[2].x,
-        height: boxModelOfTenthPost.margin[2].y + 10,
-      },
+      clip: screenshotClip,
     });
 
     return screenshotPathWithFileExtension;
@@ -134,16 +122,42 @@ export class NaverViewServiceImpl implements NaverViewService {
   }
 
   private async makeBorderForCategory($searchPage: Page) {
-    const category = new URL($searchPage.url()).searchParams.get('where');
+    const categoryQuery = new URL($searchPage.url()).searchParams.get('where');
 
-    const $categoryArea = await $searchPage.$(`a[href*="where=${category}"]`);
+    const $categoryBox = await $searchPage.$(
+      `a[href*="where=${categoryQuery}"]`
+    );
 
-    if (!$categoryArea) {
+    if (!$categoryBox) {
       throw new Error(
         'View 검색 결과 카테고리 영역을 찾을 수 없습니다. 네이버 View UI가 변경된 경우 이 에러가 발생할 수 있습니다.'
       );
     }
 
-    this.makeRedBorder($categoryArea);
+    return this.makeRedBorder($categoryBox);
+  }
+
+  private async getScreenshotClip($searchPage: Page): Promise<ScreenshotClip> {
+    const $postList = await this.findPostList($searchPage);
+    const $tenthPost = await $postList.$('li:nth-child(10)');
+
+    const boxModelOfTenthPost = await $tenthPost?.boxModel();
+    const boxModelOfPostList = await $postList?.boxModel();
+
+    if (!boxModelOfTenthPost || !boxModelOfPostList) {
+      throw new Error(
+        '스크린샷 영역을 찾을 수 없습니다. 네이버 View UI가 변경된 경우 이 에러가 발생할 수 있습니다.'
+      );
+    }
+
+    const BOTTOM_RIGHT_CORNER = 2;
+
+    return {
+      x: 0,
+      y: 0,
+      // plus 10 to width and height for visibility
+      width: boxModelOfPostList.margin[BOTTOM_RIGHT_CORNER].x + 10,
+      height: boxModelOfTenthPost.margin[BOTTOM_RIGHT_CORNER].y + 10,
+    };
   }
 }
