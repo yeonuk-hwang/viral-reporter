@@ -1,8 +1,8 @@
 import * as path from 'path';
 import * as fs from 'fs';
 import moment from 'moment';
-import { NaverViewService } from '.';
 import { NaverFactory } from './naverFactory';
+import { NaverService } from './types';
 
 jest.setTimeout(100000);
 
@@ -107,7 +107,7 @@ type ViewServiceTestVariables = {
   SCREENSHOT_PREFIX: string;
 };
 
-function cafeServiceSetUp(): NaverViewService {
+function cafeServiceSetUp(): NaverService {
   return NaverFactory.createCafeService(browser);
 }
 
@@ -122,7 +122,7 @@ function getCafeServiceVariables(): ViewServiceTestVariables {
   };
 }
 
-function blogServiceSetUp(): NaverViewService {
+function blogServiceSetUp(): NaverService {
   return NaverFactory.createBlogService(browser);
 }
 

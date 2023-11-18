@@ -1,22 +1,7 @@
 import { Browser, ElementHandle, Page, ScreenshotClip } from 'puppeteer';
+import { NaverService, ScreenshotFilePath } from './types';
 
-type ScreenshotFilePath = string;
-
-export interface NaverViewService {
-  search(keyword: string): Promise<Page>;
-  findPost(
-    $searchPage: Page,
-    postURL: string
-  ): Promise<ElementHandle<HTMLLIElement>>;
-  makeRedBorder($element: ElementHandle<HTMLElement>): Promise<void>;
-  screenshot(
-    $searchPage: Page,
-    screenshotDirectoryPath: string
-  ): Promise<ScreenshotFilePath>;
-  close(): Promise<void>;
-}
-
-export class NaverViewServiceImpl implements NaverViewService {
+export class NaverViewService implements NaverService {
   private browser: Browser;
   private baseURL: string;
 
