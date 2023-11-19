@@ -25,8 +25,16 @@ export class NaverViewService implements NaverService {
 
   async findPost(
     $searchPage: Page,
+    postURL: string
+  ): Promise<ElementHandle<HTMLLIElement>>;
+  async findPost(
+    $searchPage: Page,
+    postURL: string[]
+  ): Promise<ElementHandle<HTMLLIElement>[]>;
+  async findPost(
+    $searchPage: Page,
     postURL: string | string[]
-  ): Promise<ElementHandle<HTMLLIElement>> {
+  ): Promise<ElementHandle<HTMLLIElement> | ElementHandle<HTMLLIElement>[]> {
     const $postList = await this.findPostList($searchPage);
     const $top10Posts = await this.findTop10Posts($postList);
 
@@ -34,7 +42,7 @@ export class NaverViewService implements NaverService {
       $top10Posts.map((post) => post.$(`a[href*="${postURL}"]`))
     );
 
-    const postIndex = $postFindResults.findIndex(findAnchorFromResultArray);
+    const postIndex = $postFindResults.findIndex(isNotNull);
 
     const postIsNotExist = postIndex === -1;
 
@@ -46,9 +54,7 @@ export class NaverViewService implements NaverService {
 
     return $post;
 
-    function findAnchorFromResultArray(
-      value: ElementHandle<HTMLAnchorElement> | null
-    ) {
+    function isNotNull(value: ElementHandle<HTMLAnchorElement> | null) {
       return value !== null;
     }
   }
