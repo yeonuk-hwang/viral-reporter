@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { invokeWithCustomErrors } from 'renderer/utils';
+import { useIsLogin } from '../LoginProvider';
 import { CustomError } from 'main/errors';
 
 type UserInfo = {
@@ -17,6 +18,7 @@ interface UseLoginReturn {
 
 export function useLogin(): UseLoginReturn {
   const navigate = useNavigate();
+  const { setIsLogin } = useIsLogin();
   const [error, setError] = useState<Error | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [userInfo, setUserInfo] = useState<UserInfo>({
@@ -38,8 +40,10 @@ export function useLogin(): UseLoginReturn {
       validateForm();
       setIsLoading(true);
       await invokeWithCustomErrors(() => window.api.LOGIN(userInfo));
+      setIsLogin(true);
       navigate('/scrap');
     } catch (err) {
+      setIsLogin(false);
       if (err instanceof CustomError) {
         return setError(err);
       }

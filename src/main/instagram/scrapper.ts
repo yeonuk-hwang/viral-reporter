@@ -58,7 +58,7 @@ class InsScarpperImpl implements InsScarpper {
         throw new DeactivatedIDError();
       }
     } catch (e) {
-      if (e instanceof TimeoutError && (await page.$('#slfErrorAlert'))) {
+      if (e instanceof TimeoutError && (await page.$('._ab2z'))) {
         throw new InvalidUserNameOrPasswordError();
       }
 

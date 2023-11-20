@@ -12,10 +12,13 @@ import {
   InputGroup,
 } from '@chakra-ui/react';
 import { useState } from 'react';
+import { Navigate } from 'react-router-dom';
 import { useLogin } from './hooks/useForm';
+import { useIsLogin } from './LoginProvider';
 
 export function Login() {
   const { handleForm, requestLogin, isLoading, error } = useLogin();
+  const { isLogin } = useIsLogin();
 
   const [isShowPassword, setIsShowPassword] = useState(false);
   const toggleShowPassword = () => setIsShowPassword(!isShowPassword);
@@ -28,12 +31,14 @@ export function Login() {
     }
   };
 
+  if (isLogin) {
+    return <Navigate to="/scrap" />;
+  }
+
   return (
     <Box
-      width="100vw"
-      height="100vh"
-      paddingTop="200px"
       display="flex"
+      marginTop="20px"
       flexDirection="column"
       alignItems="center"
       justifyContent="flex-start"

@@ -8,7 +8,8 @@ type Point = [X, Y];
 interface UseScrapTargetsReturn {
   scrapTargets: [Keyword, URL][];
   saveScrapTargets(point: Point, value: string): void;
-  setScrapTragetsFromPaste(
+  resetScrapTargets(): void;
+  setScrapTargetsFromPaste(
     [startX, startY]: Point,
     e: React.ClipboardEvent<HTMLInputElement>
   ): void;
@@ -18,15 +19,19 @@ interface UseScrapTargetsReturn {
 }
 
 export const useScrapTargets = (): UseScrapTargetsReturn => {
-  const [scrapTargets, setScrapTragets] = useState<[Keyword, URL][]>(
+  const [scrapTargets, setScrapTargets] = useState<[Keyword, URL][]>(
     makeInitialScrapTargets
   );
+
+  const resetScrapTargets = () => {
+    setScrapTargets(makeInitialScrapTargets());
+  };
 
   const keywords = scrapTargets.map(([tag]) => tag).filter(Boolean);
   const urls = scrapTargets.map(([_, url]) => url).filter(Boolean);
 
   const saveScrapTargets = ([x, y]: Point, value: string) => {
-    setScrapTragets((prev) => {
+    setScrapTargets((prev) => {
       const result = [...prev];
       result[y][x] = value;
 
@@ -35,7 +40,7 @@ export const useScrapTargets = (): UseScrapTargetsReturn => {
   };
 
   const appendNewRow = () => {
-    setScrapTragets((prev) => [...prev, ['', '']]);
+    setScrapTargets((prev) => [...prev, ['', '']]);
   };
 
   function appendNewRowWithoutRender(
@@ -58,7 +63,7 @@ export const useScrapTargets = (): UseScrapTargetsReturn => {
       startY,
     ]);
 
-    setScrapTragets(pastedTargets);
+    setScrapTargets(pastedTargets);
   };
 
   function fillRowsInTarget(
@@ -90,8 +95,9 @@ export const useScrapTargets = (): UseScrapTargetsReturn => {
 
   return {
     scrapTargets,
+    resetScrapTargets,
     saveScrapTargets,
-    setScrapTragetsFromPaste,
+    setScrapTargetsFromPaste: setScrapTragetsFromPaste,
     appendNewRow,
     keywords,
     urls,

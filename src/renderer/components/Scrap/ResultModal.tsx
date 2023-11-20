@@ -54,7 +54,7 @@ export function ResultModal({
               <Table variant="simple">
                 <Thead>
                   <Tr>
-                    <Th>키워드</Th>
+                    <Th>검색어</Th>
                     <Th>인기게시물 포함 여부</Th>
                     <Th>스크린샷 경로</Th>
                   </Tr>
@@ -62,6 +62,7 @@ export function ResultModal({
                 <Tbody>
                   {scrapResult?.map((result, index) => {
                     const { tag, isPopularPostIncluded, screenshot } = result;
+
                     return (
                       <Tr key={index}>
                         <Td>{tag}</Td>
