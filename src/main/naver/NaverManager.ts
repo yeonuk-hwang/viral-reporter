@@ -21,7 +21,7 @@ export class NaverManager {
       moment().format('YYYY-MM-DDTHH-mm-ss')
     );
 
-    await mkdir(currentTimeDirectory);
+    await mkdir(currentTimeDirectory, { recursive: true });
 
     const scrapTasks = keywords.map((keyword, index) => {
       return async (): Promise<ScrapResult> => {

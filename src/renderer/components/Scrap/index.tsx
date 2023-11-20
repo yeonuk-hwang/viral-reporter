@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {
   Box,
+  Button,
   Flex,
   Heading,
   Progress,
@@ -21,6 +22,7 @@ import { ResultModal } from './ResultModal';
 import { Keyword } from 'main/instagram/types';
 
 type ScrapProps = {
+  title: string;
   renderButtons(
     requestScrap: UseRequestScrapResult['requestScrap'],
     keywords: Keyword[],
@@ -29,14 +31,15 @@ type ScrapProps = {
   ): React.ReactElement;
 };
 
-export function Scrap({ renderButtons }: ScrapProps) {
+export function Scrap({ title, renderButtons }: ScrapProps) {
   const {
     scrapTargets,
+    resetScrapTargets,
     saveScrapTargets,
     appendNewRow,
     keywords,
     urls,
-    setScrapTragetsFromPaste,
+    setScrapTargetsFromPaste: setScrapTragetsFromPaste,
   } = useScrapTargets();
 
   const { requestScrap, isLoading, result, screenShotDir } = useRequestScrap();
@@ -67,7 +70,12 @@ export function Scrap({ renderButtons }: ScrapProps) {
         paddingTop="20px"
         paddingX="5vw"
       >
-        <Heading marginBottom="30px">스크랩</Heading>
+        <Box width="100%" display="flex" justifyContent="space-between">
+          <Heading marginBottom="30px">{title}</Heading>
+          <Button colorScheme="red" onClick={resetScrapTargets}>
+            입력값 초기화
+          </Button>
+        </Box>
         <Flex
           width="100%"
           justifyContent="space-between"
@@ -75,12 +83,7 @@ export function Scrap({ renderButtons }: ScrapProps) {
           marginBottom="20px"
           gap="10px"
         >
-          <Progress
-            flex="0.85"
-            size="lg"
-            hasStripe
-            isIndeterminate={isLoading}
-          />
+          <Progress flex="1" size="lg" hasStripe isIndeterminate={isLoading} />
           {renderButtons(requestScrap, keywords, urls, isLoading)}
         </Flex>
         <Box width="100%" border="1px solid #dbdbdb">

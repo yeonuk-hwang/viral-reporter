@@ -43,6 +43,7 @@ export const bootstrap = async () => {
   );
 
   const downloadDirectory = app.getPath('downloads');
+
   const baseScreenshotDirectory = path.join(
     downloadDirectory,
     'viral-reporeter'
