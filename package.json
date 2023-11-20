@@ -125,8 +125,8 @@
     "webpack-merge": "^5.8.0"
   },
   "build": {
-    "productName": "instagram-popular-post-scrapper",
-    "appId": "org.erb.instagram-popular-post-scrapper",
+    "productName": "viral-reporter",
+    "appId": "org.erb.viral-reporter",
     "asar": true,
     "asarUnpack": "**\\*.{node,dll}",
     "files": [
