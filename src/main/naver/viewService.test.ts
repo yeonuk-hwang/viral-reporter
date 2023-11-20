@@ -17,6 +17,11 @@ describe.each([
     variables: getBlogServiceVariables(),
     setUp: blogServiceSetUp,
   },
+  {
+    serviceName: 'influencerService',
+    variables: getInfluencerServiceVariables(),
+    setUp: influencerServiceSetup,
+  },
 ])('$serviceName', ({ variables, setUp }) => {
   const {
     SEARCH_TERM,
@@ -177,5 +182,23 @@ function getBlogServiceVariables(): ViewServiceTestVariables {
     ],
     NOT_TOP_10_POST: 'https://blog.naver.com/msj1823/223146227543',
     SCREENSHOT_PREFIX: 'blog search result',
+  };
+}
+
+function influencerServiceSetup(): NaverService {
+  return NaverFactory.createInfluencer(browser);
+}
+
+function getInfluencerServiceVariables(): ViewServiceTestVariables {
+  return {
+    SEARCH_TERM: 'SK매직',
+    SEARCH_RESULT_URL:
+      'https://search.naver.com/search.naver?where=influencer&query=SK%EB%A7%A4%EC%A7%81',
+    TOP_10_POSTS: [
+      'https://blog.naver.com/ckwldud1/223268758849',
+      'https://blog.naver.com/ekfgo95/223266468286',
+    ],
+    NOT_TOP_10_POST: 'https://blog.naver.com/jeonghj2008/223245213365',
+    SCREENSHOT_PREFIX: 'influencer search result',
   };
 }
