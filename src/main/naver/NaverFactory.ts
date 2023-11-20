@@ -1,5 +1,6 @@
 import { Browser } from 'puppeteer';
-import { NaverViewService } from './viewService';
+import { InfluencerService } from './NaverInfluencerService';
+import { NaverViewService } from './NaverViewService';
 
 export class NaverFactory {
   static createCafeService(browser: Browser) {
@@ -14,5 +15,12 @@ export class NaverFactory {
       'https://search.naver.com/search.naver?where=blog';
 
     return new NaverViewService(browser, NAVER_BLOG_VIEW_URL);
+  }
+
+  static createInfluencer(browser: Browser) {
+    const NAVER_INFLUENCER_URL =
+      'https://search.naver.com/search.naver?where=influencer';
+
+    return new InfluencerService(browser, NAVER_INFLUENCER_URL);
   }
 }
