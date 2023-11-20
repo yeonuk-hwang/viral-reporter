@@ -20,7 +20,7 @@ export const bootstrap = async () => {
 
   const browserPath = browserPaths?.find((path) => fs.existsSync(path));
 
-  if (browserPath === undefined) {
+  if (app.isPackaged && browserPath === undefined) {
     dialog.showErrorBox(
       '크롬이 설치되지 않았습니다',
       `본 프로그램은 크롬이 필수적으로 설치되어 있어야 합니다. 현재 ${browserPaths}에 크롬이 설치되어 있지 않은것으로 판단됩니다`
