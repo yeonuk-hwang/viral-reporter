@@ -63,7 +63,7 @@ describe.each([
     const posts = await viewService.findPosts(searchPage, TOP_10_POSTS);
 
     expect(posts).toBeInstanceOf(Array);
-    expect(posts).not.toHaveLength(0);
+    expect(posts).toHaveLength(TOP_10_POSTS.length);
   });
 
   it(`should return an array of the posts in the top 10 if any of the given postURLs are in the top 10 posts, when the postURLs are mix of top10 and not top10`, async () => {
@@ -168,7 +168,7 @@ function getBlogServiceVariables(): ViewServiceTestVariables {
     SEARCH_RESULT_URL:
       'https://search.naver.com/search.naver?where=blog&query=SK%EB%A7%A4%EC%A7%81',
     TOP_10_POSTS: [
-      'https://blog.naver.com/gameland7979/223264709469',
+      'https://blog.naver.com/gameland7979/223269961381',
       'https://blog.naver.com/mizztop/223241274049',
     ],
     NOT_TOP_10_POST: 'https://blog.naver.com/msj1823/223146227543',

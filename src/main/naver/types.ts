@@ -10,7 +10,7 @@ export interface NaverService {
   ): Promise<ElementHandle<HTMLLIElement>>;
   findPosts(
     $searchPage: Page,
-    postURL: string[]
+    postURLs: string[]
   ): Promise<ElementHandle<HTMLLIElement>[]>;
   makeRedBorder($element: ElementHandle<HTMLElement>): Promise<void>;
   screenshot(

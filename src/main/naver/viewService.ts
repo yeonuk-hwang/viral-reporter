@@ -29,7 +29,7 @@ export class NaverViewService implements NaverService {
   ): Promise<ElementHandle<HTMLLIElement>>;
   async findPosts(
     $searchPage: Page,
-    postURL: string[]
+    postURLs: string[]
   ): Promise<ElementHandle<HTMLLIElement>[]>;
   async findPosts(
     $searchPage: Page,
@@ -42,16 +42,28 @@ export class NaverViewService implements NaverService {
     if (typeof postURL === 'string') {
       const $post = await this.findPost($postList, postURL);
 
-      if ($post) {
-        return $post;
-      } else {
+      if ($post === null) {
         throw postNotFoundError;
+      } else {
+        return $post;
       }
     }
 
-    // if(Array.isArray(postURL)) {
-    //
-    // }
+    if (Array.isArray(postURL)) {
+      const $posts = await Promise.all(
+        postURL.map((aPostURL) => this.findPost($postList, aPostURL))
+      );
+
+      const $top10Posts = $posts.filter(
+        (value): value is ElementHandle<HTMLLIElement> => value !== null
+      );
+
+      if ($top10Posts.length === 0) {
+        throw postNotFoundError;
+      } else {
+        return $top10Posts;
+      }
+    }
 
     throw new Error(`unexpected argument, postURL:${postURL}`);
   }
