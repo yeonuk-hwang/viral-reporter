@@ -36,7 +36,7 @@ export class NaverManager {
         if (findResults.some(({ status }) => status === 'fulfilled')) {
           const screenshotPath = await this.naverService.screenshot(
             page,
-            path.join(currentTimeDirectory, `/${index + 1}_${keyword}.png`)
+            path.join(currentTimeDirectory, `/${index + 1}_${keyword}`)
           );
 
           return {
