@@ -5,10 +5,11 @@ import {
   Outlet,
 } from 'react-router-dom';
 import { ChakraProvider } from '@chakra-ui/react';
-import { Login, Scrap, Home, Naver } from './pages';
+import { Login, Home, NaverScrap, InstagramScrap } from './pages';
 import { useEffect } from 'react';
 import { NavbarWithOutlet } from './pages/NavBar';
 import { IsLoginProvider } from './pages/Login/LoginProvider';
+import {} from './pages/InstagramScrap';
 
 export default function App() {
   useEffect(() => {
@@ -28,9 +29,9 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route element={<NavbarWithOutlet />}>
-              <Route path="naver" element={<Naver />} />
+              <Route path="naver" element={<NaverScrap />} />
               <Route path="instagram" element={<Login />} />
-              <Route path="scrap" element={<Scrap />} />
+              <Route path="/scrap" element={<InstagramScrap />} />
             </Route>
           </Routes>
         </Router>

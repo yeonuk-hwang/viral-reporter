@@ -1,7 +1,8 @@
 import { app, dialog, ipcMain, shell } from 'electron';
 import * as fs from 'fs';
+import path from 'path';
 import { CHANNEL } from './channel';
-import { makeScrapper } from './instagram';
+import { makeScrappers } from './instagram';
 import { Keyword, URL } from './instagram/types';
 import { handleWithCustomErrors } from './util';
 
@@ -27,19 +28,66 @@ export const bootstrap = async () => {
     );
   }
 
-  const scrapper = await makeScrapper(browserPath);
+  const {
+    naverInfluencerManager,
+    naverBlogManager,
+    naverCafeManager,
+    instagramManager,
+  } = await makeScrappers(browserPath);
 
   handleWithCustomErrors(
     CHANNEL.LOGIN,
     (_, { userName, password }: { userName: string; password: string }) => {
-      return scrapper.login(userName, password);
+      return instagramManager.login(userName, password);
     }
+  );
+
+  const downloadDirectory = app.getPath('downloads');
+
+  const baseScreenshotDirectory = path.join(
+    downloadDirectory,
+    'viral-reporeter'
   );
 
   handleWithCustomErrors(
     CHANNEL.SCRAP,
     (_, hashTags: Keyword[], urls: URL[]) => {
-      return scrapper.scrap(hashTags, urls, app.getPath('downloads'));
+      return instagramManager.scrap(
+        hashTags,
+        urls,
+        path.join(baseScreenshotDirectory, 'instagram')
+      );
+    }
+  );
+
+  handleWithCustomErrors(
+    CHANNEL.NAVER_BLOG_SCRAP,
+    (_, keywords: Keyword[], urls: URL[]) => {
+      return naverBlogManager.scrap(
+        keywords,
+        urls,
+        path.join(baseScreenshotDirectory, 'naver_blog')
+      );
+    }
+  );
+  handleWithCustomErrors(
+    CHANNEL.NAVER_CAFE_SCRAP,
+    (_, keywords: Keyword[], urls: URL[]) => {
+      return naverCafeManager.scrap(
+        keywords,
+        urls,
+        path.join(baseScreenshotDirectory, 'naver_cafe')
+      );
+    }
+  );
+  handleWithCustomErrors(
+    CHANNEL.NAVER_INFLUENCER_SCRAP,
+    (_, keywords: Keyword[], urls: URL[]) => {
+      return naverInfluencerManager.scrap(
+        keywords,
+        urls,
+        path.join(baseScreenshotDirectory, 'naver_influencer')
+      );
     }
   );
 
@@ -57,6 +105,4 @@ export const bootstrap = async () => {
       `${err.name}: ${err.message}`
     );
   });
-
-  return scrapper;
 };

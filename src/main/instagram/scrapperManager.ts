@@ -1,17 +1,13 @@
 import * as path from 'path';
+import * as fs from 'fs';
 import { mkdir } from 'fs/promises';
 import moment from 'moment';
 import { InsScarpper } from './scrapper';
 import { Keyword, URL } from './types';
 import { isFulfilled, isRejected } from './util';
+import { ScrapResult } from 'main/@types/scrap';
 
 type observer = (percent: number) => void;
-
-export type ScrapResult = {
-  tag: string;
-  isPopularPostIncluded: boolean;
-  screenshot: string | null;
-};
 
 export class ScrapperManager {
   private scrapper: InsScarpper;
@@ -38,7 +34,7 @@ export class ScrapperManager {
       moment().format('YYYY-MM-DDTHH-mm-ss')
     );
 
-    await mkdir(currentTimeDirectory);
+    await mkdir(currentTimeDirectory, { recursive: true });
 
     const scrapTasks = hashTags.map((tag, index) => {
       return async (): Promise<ScrapResult> => {

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   Button,
@@ -14,25 +14,38 @@ import {
 } from '@chakra-ui/react';
 import { useScrapTargets } from './hooks/useScrapTargets';
 import { ScrapTableRow } from './ScrapTableRow';
-import { useRequestScrap } from './hooks/useRequestScrap';
+import {
+  useRequestScrap,
+  UseRequestScrapResult,
+} from './hooks/useRequestScrap';
 import { ResultModal } from './ResultModal';
+import { Keyword } from 'main/instagram/types';
 
-export function Scrap() {
+type ScrapProps = {
+  title: string;
+  renderButtons(
+    requestScrap: UseRequestScrapResult['requestScrap'],
+    keywords: Keyword[],
+    urls: string[],
+    isLoading: UseRequestScrapResult['isLoading']
+  ): React.ReactElement;
+};
+
+export function Scrap({ title, renderButtons }: ScrapProps) {
   const {
     scrapTargets,
+    resetScrapTargets,
     saveScrapTargets,
     appendNewRow,
     keywords,
     urls,
-    setScrapTragetsFromPaste,
+    setScrapTargetsFromPaste: setScrapTragetsFromPaste,
   } = useScrapTargets();
 
   const { requestScrap, isLoading, result, screenShotDir } = useRequestScrap();
 
   const [showResult, setShowResult] = useState(false);
   const closeResult = () => setShowResult(false);
-
-  const scrap = () => requestScrap(keywords, urls);
 
   const appendNewRowIfItIsLastRow = (yCoordinateOfRow: number) => {
     const isLastRow = yCoordinateOfRow === scrapTargets.length - 1;
@@ -57,27 +70,21 @@ export function Scrap() {
         paddingTop="20px"
         paddingX="5vw"
       >
-        <Heading marginBottom="30px">스크랩</Heading>
+        <Box width="100%" display="flex" justifyContent="space-between">
+          <Heading marginBottom="30px">{title}</Heading>
+          <Button colorScheme="red" onClick={resetScrapTargets}>
+            입력값 초기화
+          </Button>
+        </Box>
         <Flex
           width="100%"
           justifyContent="space-between"
           alignItems="center"
           marginBottom="20px"
+          gap="10px"
         >
-          <Progress
-            flex="0.85"
-            size="lg"
-            hasStripe
-            isIndeterminate={isLoading}
-          />
-          <Button
-            flex="0.1"
-            colorScheme="messenger"
-            onClick={scrap}
-            isLoading={isLoading}
-          >
-            스크랩
-          </Button>
+          <Progress flex="1" size="lg" hasStripe isIndeterminate={isLoading} />
+          {renderButtons(requestScrap, keywords, urls, isLoading)}
         </Flex>
         <Box width="100%" border="1px solid #dbdbdb">
           <Box height="70vh" overflow="scroll">
