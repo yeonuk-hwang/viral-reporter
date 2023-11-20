@@ -29,3 +29,9 @@ npm-debug.log.*
 *.scss.d.ts
 
 *.png
+
+#.env
+*.env.*
+
+# test
+/test_screenshot/
