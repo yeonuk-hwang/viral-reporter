@@ -109,17 +109,18 @@ describe.each([
 
     const searchPage = await viewService.search(SEARCH_TERM);
 
-    const post = await viewService.findPosts(searchPage, A_TOP_10_POST);
+    const posts = await viewService.findPosts(searchPage, TOP_10_POSTS);
 
-    await viewService.makeRedBorder(post);
+    await Promise.all(posts.map((post) => viewService.makeRedBorder(post)));
 
     const TEST_SCREENSHOT_DIRECTORY = path.join(
       process.cwd(),
       'test_screenshot'
     );
 
-    if (!fs.existsSync(TEST_SCREENSHOT_DIRECTORY))
+    if (!fs.existsSync(TEST_SCREENSHOT_DIRECTORY)) {
       fs.mkdirSync(TEST_SCREENSHOT_DIRECTORY);
+    }
 
     const TEST_SCREENSHOT_PATH = path.join(
       TEST_SCREENSHOT_DIRECTORY,
@@ -152,7 +153,10 @@ function getCafeServiceVariables(): ViewServiceTestVariables {
     SEARCH_TERM: '롯데 기프트카드',
     SEARCH_RESULT_URL:
       'https://search.naver.com/search.naver?where=article&query=%EB%A1%AF%EB%8D%B0%20%EA%B8%B0%ED%94%84%ED%8A%B8%EC%B9%B4%EB%93%9C',
-    TOP_10_POSTS: ['https://cafe.naver.com/bookchildlove/1978681'],
+    TOP_10_POSTS: [
+      'https://cafe.naver.com/bookchildlove/1978681',
+      'https://cafe.naver.com/joonggonara/1004755761',
+    ],
     NOT_TOP_10_POST: 'https://cafe.naver.com/culturebloom/2062559',
     SCREENSHOT_PREFIX: 'cafe search result',
   };
