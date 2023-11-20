@@ -1,3 +1,4 @@
+import { Keyword, URL } from 'main/instagram/types';
 import { useState } from 'react';
 
 type X = number;
@@ -5,75 +6,98 @@ type Y = number;
 type Point = [X, Y];
 
 interface UseScrapTargetsReturn {
-  scrapTargets: string[][];
-  hashTags: string[];
-  urls: string[];
+  scrapTargets: [Keyword, URL][];
   saveScrapTargets(point: Point, value: string): void;
-  makeNewTargets(index: number): void;
   setScrapTragetsFromPaste(
     [startX, startY]: Point,
     e: React.ClipboardEvent<HTMLInputElement>
   ): void;
+  appendNewRow(): void;
+  keywords: Keyword[];
+  urls: URL[];
 }
 
 export const useScrapTargets = (): UseScrapTargetsReturn => {
-  const [scrapTargets, setScrapTragets] = useState(makeInitialScrapTargets);
+  const [scrapTargets, setScrapTragets] = useState<[Keyword, URL][]>(
+    makeInitialScrapTargets
+  );
+
+  const keywords = scrapTargets.map(([tag]) => tag).filter(Boolean);
+  const urls = scrapTargets.map(([_, url]) => url).filter(Boolean);
 
   const saveScrapTargets = ([x, y]: Point, value: string) => {
     setScrapTragets((prev) => {
       const result = [...prev];
       result[y][x] = value;
+
       return result;
     });
   };
 
-  const makeNewTargets = (index: number) => {
-    if (index === scrapTargets.length - 1) {
-      setScrapTragets((prev) => [...prev, ['', '']]);
-    }
+  const appendNewRow = () => {
+    setScrapTragets((prev) => [...prev, ['', '']]);
   };
 
-  const hashTags = scrapTargets.map(([tag]) => tag).filter(Boolean);
-  const urls = scrapTargets.map(([_, url]) => url).filter(Boolean);
+  function appendNewRowWithoutRender(
+    target: UseScrapTargetsReturn['scrapTargets']
+  ) {
+    target.push(['', '']);
+  }
 
   const setScrapTragetsFromPaste = (
     [startX, startY]: Point,
     e: React.ClipboardEvent<HTMLInputElement>
   ) => {
+    e.preventDefault();
+
     const textData = e.clipboardData.getData('text');
     const rows = textData.split('\n');
-    const isTextDataMultipleCell = rows.length > 1;
 
-    if (isTextDataMultipleCell) {
-      e.preventDefault();
+    const pastedTargets = fillRowsInTarget(scrapTargets, rows, [
+      startX,
+      startY,
+    ]);
 
-      const result = [...scrapTargets];
-
-      rows.forEach((row, copyY) => {
-        const cells = row.split('\t');
-        cells.forEach((cell, copyX) => {
-          if (!result[startY + copyY]) {
-            result[startY + copyY] = [];
-          }
-
-          result[startY + copyY][startX + copyX] = cell;
-        });
-      });
-
-      setScrapTragets(result);
-    }
+    setScrapTragets(pastedTargets);
   };
+
+  function fillRowsInTarget(
+    originTargets: UseScrapTargetsReturn['scrapTargets'],
+    rows: string[],
+    [startX, startY]: Point
+  ) {
+    const result = [...originTargets];
+
+    rows.forEach((row, yRelativeCoordinateOfRow) => {
+      const cells = row.split('\t');
+      const yAbsoluteCoordinateOfRow = startY + yRelativeCoordinateOfRow;
+
+      const rowDoesNotExist = !result[yAbsoluteCoordinateOfRow];
+
+      if (rowDoesNotExist) {
+        appendNewRowWithoutRender(result);
+      }
+
+      cells.forEach((cell, xRelativeCoordinateOfCell) => {
+        const xAbsoluteCoordinateOfCell = startX + xRelativeCoordinateOfCell;
+
+        result[yAbsoluteCoordinateOfRow][xAbsoluteCoordinateOfCell] = cell;
+      });
+    });
+
+    return result;
+  }
 
   return {
     scrapTargets,
     saveScrapTargets,
-    makeNewTargets,
     setScrapTragetsFromPaste,
-    hashTags,
+    appendNewRow,
+    keywords,
     urls,
   };
 };
 
-const makeInitialScrapTargets = () => {
-  return new Array(40).fill(null).map(() => new Array(2).fill(''));
+const makeInitialScrapTargets = (): [Keyword, URL][] => {
+  return new Array(40).fill(null).map(() => ['', '']);
 };

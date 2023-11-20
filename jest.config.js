@@ -8,7 +8,6 @@ module.exports = {
     '\\.(css|less|sass|scss)$': 'identity-obj-proxy',
   },
   setupFiles: ['./.erb/scripts/check-build-exists.ts'],
-  testEnvironment: 'jsdom',
   testEnvironmentOptions: {
     url: 'http://localhost/',
   },

@@ -16,7 +16,7 @@ import {
   Button,
   Badge,
 } from '@chakra-ui/react';
-import { ScrapResult } from 'main/scrapper/scrapperManager';
+import { ScrapResult } from 'main/instagram/scrapperManager';
 import { invokeWithCustomErrors } from 'renderer/utils';
 
 interface Props {
