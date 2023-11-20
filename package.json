@@ -127,6 +127,7 @@
   "build": {
     "productName": "viral-reporter",
     "appId": "org.erb.viral-reporter",
+    "npmRebuild": false,
     "asar": true,
     "asarUnpack": "**\\*.{node,dll}",
     "files": [
