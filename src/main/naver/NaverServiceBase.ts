@@ -120,7 +120,7 @@ export abstract class NaverServiceBase implements NaverService {
 
     if (!boxModelOfTenthPost || !boxModelOfPostList) {
       throw new Error(
-        '스크린샷 영역을 찾을 수 없습니다. 네이버 View UI가 변경된 경우 이 에러가 발생할 수 있습니다.'
+        '스크린샷 영역을 찾을 수 없습니다. 네이버 UI가 변경된 경우 이 에러가 발생할 수 있습니다.'
       );
     }
 
