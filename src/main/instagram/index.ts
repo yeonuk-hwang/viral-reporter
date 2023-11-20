@@ -1,6 +1,6 @@
-import { NaverFactory } from 'main/naver/NaverFactory';
-import { NaverManager } from 'main/naver/NaverManager';
 import puppeteer from 'puppeteer';
+import { NaverManager } from '../naver/NaverManager';
+import { NaverFactory } from '../naver/NaverFactory';
 import { InsScarpperImpl } from './scrapper';
 import { ScrapperManager } from './scrapperManager';
 

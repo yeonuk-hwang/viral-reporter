@@ -9,6 +9,7 @@ import { Login, Scrap, Home, Naver } from './pages';
 import { useEffect } from 'react';
 import { NavbarWithOutlet } from './pages/NavBar';
 import { IsLoginProvider } from './pages/Login/LoginProvider';
+import { InstagramScrap } from './pages/InstagramScrap';
 
 export default function App() {
   useEffect(() => {
@@ -26,11 +27,11 @@ export default function App() {
       <IsLoginProvider>
         <Router>
           <Routes>
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={<InstagramScrap />} />
             <Route element={<NavbarWithOutlet />}>
               <Route path="naver" element={<Naver />} />
               <Route path="instagram" element={<Login />} />
-              <Route path="scrap" element={<Scrap />} />
+              <Route path="/scrap" element={<InstagramScrap />} />
             </Route>
           </Routes>
         </Router>

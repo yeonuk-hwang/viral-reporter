@@ -1,4 +1,5 @@
 import * as path from 'path';
+import * as fs from 'fs';
 import { mkdir } from 'fs/promises';
 import moment from 'moment';
 import { InsScarpper } from './scrapper';
@@ -33,7 +34,7 @@ export class ScrapperManager {
       moment().format('YYYY-MM-DDTHH-mm-ss')
     );
 
-    await mkdir(currentTimeDirectory);
+    await mkdir(currentTimeDirectory, { recursive: true });
 
     const scrapTasks = hashTags.map((tag, index) => {
       return async (): Promise<ScrapResult> => {

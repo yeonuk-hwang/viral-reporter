@@ -1,7 +1,6 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box,
-  Button,
   Flex,
   Heading,
   Progress,
@@ -14,10 +13,23 @@ import {
 } from '@chakra-ui/react';
 import { useScrapTargets } from './hooks/useScrapTargets';
 import { ScrapTableRow } from './ScrapTableRow';
-import { useRequestScrap } from './hooks/useRequestScrap';
+import {
+  useRequestScrap,
+  UseRequestScrapResult,
+} from './hooks/useRequestScrap';
 import { ResultModal } from './ResultModal';
+import { Keyword } from 'main/instagram/types';
 
-export function Scrap() {
+type ScrapProps = {
+  renderButtons(
+    requestScrap: UseRequestScrapResult['requestScrap'],
+    keywords: Keyword[],
+    urls: string[],
+    isLoading: UseRequestScrapResult['isLoading']
+  ): React.ReactElement;
+};
+
+export function Scrap({ renderButtons }: ScrapProps) {
   const {
     scrapTargets,
     saveScrapTargets,
@@ -31,8 +43,6 @@ export function Scrap() {
 
   const [showResult, setShowResult] = useState(false);
   const closeResult = () => setShowResult(false);
-
-  const scrap = () => requestScrap(keywords, urls);
 
   const appendNewRowIfItIsLastRow = (yCoordinateOfRow: number) => {
     const isLastRow = yCoordinateOfRow === scrapTargets.length - 1;
@@ -63,6 +73,7 @@ export function Scrap() {
           justifyContent="space-between"
           alignItems="center"
           marginBottom="20px"
+          gap="10px"
         >
           <Progress
             flex="0.85"
@@ -70,14 +81,7 @@ export function Scrap() {
             hasStripe
             isIndeterminate={isLoading}
           />
-          <Button
-            flex="0.1"
-            colorScheme="messenger"
-            onClick={scrap}
-            isLoading={isLoading}
-          >
-            스크랩
-          </Button>
+          {renderButtons(requestScrap, keywords, urls, isLoading)}
         </Flex>
         <Box width="100%" border="1px solid #dbdbdb">
           <Box height="70vh" overflow="scroll">

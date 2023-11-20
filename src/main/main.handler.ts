@@ -104,6 +104,4 @@ export const bootstrap = async () => {
       `${err.name}: ${err.message}`
     );
   });
-
-  return scrapper;
 };
