@@ -26,7 +26,9 @@ export function Scrap() {
     urls,
     setScrapTragetsFromPaste,
   } = useScrapTargets();
+
   const { requestScrap, isLoading, result, screenShotDir } = useRequestScrap();
+
   const [showResult, setShowResult] = useState(false);
   const closeResult = () => setShowResult(false);
 
@@ -49,8 +51,6 @@ export function Scrap() {
   return (
     <>
       <Box
-        width="100vw"
-        height="100vh"
         display="flex"
         flexDir="column"
         alignItems="center"
