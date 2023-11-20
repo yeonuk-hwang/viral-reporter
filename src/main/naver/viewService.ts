@@ -23,40 +23,37 @@ export class NaverViewService implements NaverService {
     return $page;
   }
 
-  async findPost(
+  async findPosts(
     $searchPage: Page,
     postURL: string
   ): Promise<ElementHandle<HTMLLIElement>>;
-  async findPost(
+  async findPosts(
     $searchPage: Page,
     postURL: string[]
   ): Promise<ElementHandle<HTMLLIElement>[]>;
-  async findPost(
+  async findPosts(
     $searchPage: Page,
     postURL: string | string[]
   ): Promise<ElementHandle<HTMLLIElement> | ElementHandle<HTMLLIElement>[]> {
     const $postList = await this.findPostList($searchPage);
-    const $top10Posts = await this.findTop10Posts($postList);
 
-    const $postFindResults = await Promise.all(
-      $top10Posts.map((post) => post.$(`a[href*="${postURL}"]`))
-    );
+    const postNotFoundError = new Error('포스트가 존재하지 않습니다.');
 
-    const postIndex = $postFindResults.findIndex(isNotNull);
+    if (typeof postURL === 'string') {
+      const $post = await this.findPost($postList, postURL);
 
-    const postIsNotExist = postIndex === -1;
-
-    if (postIsNotExist) {
-      throw new Error('포스트가 존재하지 않습니다.');
+      if ($post) {
+        return $post;
+      } else {
+        throw postNotFoundError;
+      }
     }
 
-    const $post = $top10Posts[postIndex];
+    // if(Array.isArray(postURL)) {
+    //
+    // }
 
-    return $post;
-
-    function isNotNull(value: ElementHandle<HTMLAnchorElement> | null) {
-      return value !== null;
-    }
+    throw new Error(`unexpected argument, postURL:${postURL}`);
   }
 
   makeRedBorder($element: ElementHandle<HTMLElement>): Promise<void> {
@@ -100,16 +97,15 @@ export class NaverViewService implements NaverService {
     return $postList;
   }
 
-  private async findTop10Posts($postList: ElementHandle<HTMLUListElement>) {
-    const posts = await $postList.$$('li');
+  private async findPost(
+    $postList: ElementHandle<HTMLUListElement>,
+    postURL: string
+  ) {
+    const $post = await $postList.$(
+      `li:has(a[href*="${postURL}"]):nth-child(-n+10)`
+    );
 
-    if (posts.length === 0) {
-      throw new Error(
-        'View 검색 결과 포스트 영역을 찾을 수 없습니다. 네이버 View UI가 변경된 경우 이 에러가 발생할 수 있습니다.'
-      );
-    }
-
-    return posts.slice(0, 10);
+    return $post ? $post.toElement('li') : null;
   }
 
   private async makeBorderForCategory($searchPage: Page) {
