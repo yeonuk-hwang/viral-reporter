@@ -154,7 +154,7 @@ export class NaverViewService implements NaverService {
     return {
       x: 0,
       y: 0,
-      // plus 10 to width and height for visibility
+      // plus 10 to width and height for adding a margin to the screenshot
       width: boxModelOfPostList.margin[BOTTOM_RIGHT_CORNER].x + 10,
       height: boxModelOfTenthPost.margin[BOTTOM_RIGHT_CORNER].y + 10,
     };
