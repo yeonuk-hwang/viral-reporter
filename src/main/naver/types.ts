@@ -4,11 +4,11 @@ export type ScreenshotFilePath = string;
 
 export interface NaverService {
   search(keyword: string): Promise<Page>;
-  findPost(
+  findPosts(
     $searchPage: Page,
     postURL: string
   ): Promise<ElementHandle<HTMLLIElement>>;
-  findPost(
+  findPosts(
     $searchPage: Page,
     postURL: string[]
   ): Promise<ElementHandle<HTMLLIElement>[]>;
