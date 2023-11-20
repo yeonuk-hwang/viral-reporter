@@ -46,7 +46,7 @@ export const bootstrap = async () => {
 
   const baseScreenshotDirectory = path.join(
     downloadDirectory,
-    'viral-reporeter'
+    'viral-reporter'
   );
 
   handleWithCustomErrors(
