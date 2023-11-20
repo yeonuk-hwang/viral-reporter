@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as fs from 'fs';
 import moment from 'moment';
-import { NaverFactory } from './naverFactory';
+import { NaverFactory } from './NaverFactory';
 import { NaverService } from './types';
 
 jest.setTimeout(100000);
@@ -33,69 +33,87 @@ describe.each([
 
   const A_TOP_10_POST = TOP_10_POSTS[0];
 
-  it(`should search for posts on naver with a given search term`, async () => {
-    const viewService = setUp();
+  it.concurrent(
+    `should search for posts on naver with a given search term`,
+    async () => {
+      const viewService = setUp();
 
-    const page = await viewService.search(SEARCH_TERM);
+      const page = await viewService.search(SEARCH_TERM);
 
-    expect(page.url()).toBe(SEARCH_RESULT_URL);
-  });
+      expect(page.url()).toBe(SEARCH_RESULT_URL);
+    }
+  );
 
-  it(`should return a post if a given post is in the top 10 posts`, async () => {
-    const viewService = setUp();
+  it.concurrent(
+    `should return a post if a given post is in the top 10 posts`,
+    async () => {
+      const viewService = setUp();
 
-    const searchPage = await viewService.search(SEARCH_TERM);
+      const searchPage = await viewService.search(SEARCH_TERM);
 
-    const post = await viewService.findPosts(searchPage, A_TOP_10_POST);
-    expect(post).toBeTruthy();
-  });
+      const post = await viewService.findPosts(searchPage, A_TOP_10_POST);
+      expect(post).toBeTruthy();
+    }
+  );
 
-  it(`should throw Error if a given post is not in the top 10 posts`, async () => {
-    const viewService = setUp();
+  it.concurrent(
+    `should throw Error if a given post is not in the top 10 posts`,
+    async () => {
+      const viewService = setUp();
 
-    const searchPage = await viewService.search(SEARCH_TERM);
+      const searchPage = await viewService.search(SEARCH_TERM);
 
-    await expect(() =>
-      viewService.findPosts(searchPage, NOT_TOP_10_POST)
-    ).rejects.toThrow('포스트가 존재하지 않습니다.');
-  });
+      await expect(() =>
+        viewService.findPosts(searchPage, NOT_TOP_10_POST)
+      ).rejects.toThrow('포스트가 존재하지 않습니다.');
+    }
+  );
 
-  it(`should return an array of the posts in the top 10 if any of the given postURLs are in the top 10 posts`, async () => {
-    const viewService = setUp();
+  it.concurrent(
+    `should return an array of the posts in the top 10 if any of the given postURLs are in the top 10 posts`,
+    async () => {
+      const viewService = setUp();
 
-    const searchPage = await viewService.search(SEARCH_TERM);
+      const searchPage = await viewService.search(SEARCH_TERM);
 
-    const posts = await viewService.findPosts(searchPage, TOP_10_POSTS);
+      const posts = await viewService.findPosts(searchPage, TOP_10_POSTS);
 
-    expect(posts).toBeInstanceOf(Array);
-    expect(posts).toHaveLength(TOP_10_POSTS.length);
-  });
+      expect(posts).toBeInstanceOf(Array);
+      expect(posts).toHaveLength(TOP_10_POSTS.length);
+    }
+  );
 
-  it(`should return an array of the posts in the top 10 if any of the given postURLs are in the top 10 posts, when the postURLs are mix of top10 and not top10`, async () => {
-    const viewService = setUp();
+  it.concurrent(
+    `should return an array of the posts in the top 10 if any of the given postURLs are in the top 10 posts, when the postURLs are mix of top10 and not top10`,
+    async () => {
+      const viewService = setUp();
 
-    const searchPage = await viewService.search(SEARCH_TERM);
+      const searchPage = await viewService.search(SEARCH_TERM);
 
-    const posts = await viewService.findPosts(searchPage, [
-      ...TOP_10_POSTS,
-      NOT_TOP_10_POST,
-    ]);
+      const posts = await viewService.findPosts(searchPage, [
+        ...TOP_10_POSTS,
+        NOT_TOP_10_POST,
+      ]);
 
-    expect(posts).toBeInstanceOf(Array);
-    expect(posts).toHaveLength(TOP_10_POSTS.length);
-  });
+      expect(posts).toBeInstanceOf(Array);
+      expect(posts).toHaveLength(TOP_10_POSTS.length);
+    }
+  );
 
-  it(`should throw Error if any of the given postURLs are not in the top 10 posts`, async () => {
-    const viewService = setUp();
+  it.concurrent(
+    `should throw Error if any of the given postURLs are not in the top 10 posts`,
+    async () => {
+      const viewService = setUp();
 
-    const searchPage = await viewService.search(SEARCH_TERM);
+      const searchPage = await viewService.search(SEARCH_TERM);
 
-    await expect(() =>
-      viewService.findPosts(searchPage, [NOT_TOP_10_POST])
-    ).rejects.toThrow('포스트가 존재하지 않습니다.');
-  });
+      await expect(() =>
+        viewService.findPosts(searchPage, [NOT_TOP_10_POST])
+      ).rejects.toThrow('포스트가 존재하지 않습니다.');
+    }
+  );
 
-  it(`should make red border to a given post`, async () => {
+  it.concurrent(`should make red border to a given post`, async () => {
     const viewService = setUp();
 
     const searchPage = await viewService.search(SEARCH_TERM);
@@ -109,7 +127,7 @@ describe.each([
     );
   });
 
-  it(`should be able to screenshot popular post page`, async () => {
+  it.concurrent(`should be able to screenshot popular post page`, async () => {
     const viewService = setUp();
 
     const searchPage = await viewService.search(SEARCH_TERM);
