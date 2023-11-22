@@ -27,30 +27,34 @@ export class NaverManager {
       return async (): Promise<ScrapResult> => {
         const page = await this.naverService.search(keyword);
 
-        const findResults = await Promise.allSettled(
-          urls.map(async (url) => {
-            const post = await this.naverService.findPosts(page, url);
-            await this.naverService.makeRedBorder(post);
-          })
-        );
-
-        if (findResults.some(({ status }) => status === 'fulfilled')) {
-          const screenshotPath = await this.naverService.screenshot(
-            page,
-            path.join(currentTimeDirectory, `/${index + 1}_${keyword}`)
+        try {
+          const findResults = await Promise.allSettled(
+            urls.map(async (url) => {
+              const post = await this.naverService.findPosts(page, url);
+              await this.naverService.makeRedBorder(post);
+            })
           );
 
-          return {
-            tag: keyword,
-            isPopularPostIncluded: true,
-            screenshot: screenshotPath,
-          };
-        } else {
-          return {
-            tag: keyword,
-            isPopularPostIncluded: false,
-            screenshot: null,
-          };
+          if (findResults.some(({ status }) => status === 'fulfilled')) {
+            const screenshotPath = await this.naverService.screenshot(
+              page,
+              path.join(currentTimeDirectory, `/${index + 1}_${keyword}`)
+            );
+
+            return {
+              tag: keyword,
+              isPopularPostIncluded: true,
+              screenshot: screenshotPath,
+            };
+          } else {
+            return {
+              tag: keyword,
+              isPopularPostIncluded: false,
+              screenshot: null,
+            };
+          }
+        } finally {
+          page.close();
         }
       };
     });
