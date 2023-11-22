@@ -54,7 +54,8 @@ export class NaverManager {
             };
           }
         } finally {
-          page.close();
+          // TODO: delete
+          // page.close();
         }
       };
     });

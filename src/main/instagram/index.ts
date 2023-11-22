@@ -9,6 +9,8 @@ export async function makeScrappers(executablePath?: string) {
     args: ['--disk-cache-size=0', '--lang=en-US', '--no-sandbox'],
     defaultViewport: null,
     executablePath,
+    // TODO: delete after debugging
+    headless: false,
   });
 
   const instagramScrapper = new InsScarpperImpl(browser);
