@@ -5,7 +5,9 @@ export class NaverViewService extends NaverServiceBase {
   protected async findPostList(
     $searchPage: Page
   ): Promise<ElementHandle<HTMLUListElement>> {
-    const $postList = await $searchPage.$('ul.lst_view');
+    const $postList = await $searchPage.waitForSelector('ul.lst_view', {
+      timeout: 0,
+    });
 
     if ($postList === null) {
       throw new Error(

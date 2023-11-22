@@ -1,4 +1,5 @@
 import { Browser, ElementHandle, Page, ScreenshotClip } from 'puppeteer';
+import { container } from 'webpack';
 import { NaverService, ScreenshotFilePath } from './types';
 
 export abstract class NaverServiceBase implements NaverService {
@@ -18,6 +19,46 @@ export abstract class NaverServiceBase implements NaverService {
       waitUntil: 'networkidle0',
       // disable timeout
       timeout: 0,
+    });
+
+    $page
+      .waitForSelector('text/제한 해제')
+      .then((securityButton) => securityButton?.click());
+
+    await $page.waitForSelector('ul.lst_view');
+
+    await $page.evaluate(async () => {
+      const images = window.document
+        ?.querySelector('ul.lst_view')
+        ?.querySelectorAll(
+          'li:nth-child(-n + 10) img:not([alt="이미지준비중"])'
+        );
+
+      const posts = window.document.querySelectorAll(
+        'ul.lst_view li:nth-child(-n + 10)'
+      );
+
+      Array.from(posts).forEach((post) => {
+        post.scrollIntoView({ behavior: 'smooth' });
+      });
+
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
+      window.scrollTo({ top: 0, left: 0 });
+
+      return Promise.all(
+        Array.from(images, (image, index) => {
+          if (image.complete && image.naturalWidth > 1) return true;
+
+          return new Promise((resolve, reject) => {
+            image?.addEventListener('load', (e) => {
+              console.log('load', image, index);
+              resolve(e);
+            });
+            image?.addEventListener('error', reject);
+          });
+        })
+      );
     });
 
     return $page;
@@ -83,6 +124,8 @@ export abstract class NaverServiceBase implements NaverService {
     const screenshotPathWithFileExtension = screenshotPath + '.png';
     const screenshotClip = await this.getScreenshotClip($searchPage);
 
+    await new Promise((r) => setTimeout(r, 5000));
+
     await $searchPage.screenshot({
       path: screenshotPathWithFileExtension,
       clip: screenshotClip,
@@ -124,7 +167,13 @@ export abstract class NaverServiceBase implements NaverService {
       );
     }
 
+    console.log(boxModelOfPostList, boxModelOfTenthPost);
     const BOTTOM_RIGHT_CORNER = 2;
+
+    await $searchPage.evaluate(() => {
+      window.scrollBy(0, 0);
+      return Promise.resolve();
+    });
 
     return {
       x: 0,
