@@ -26,6 +26,7 @@ export class NaverManager {
     const scrapTasks = keywords.map((keyword, index) => {
       return async (): Promise<ScrapResult> => {
         const page = await this.naverService.search(keyword);
+
         const findResults = await Promise.allSettled(
           urls.map(async (url) => {
             const post = await this.naverService.findPosts(page, url);
@@ -54,11 +55,31 @@ export class NaverManager {
       };
     });
 
-    const results = await Promise.allSettled(scrapTasks.map((task) => task()));
+    const scrapResults = [];
+
+    for (const scrapTask of scrapTasks) {
+      try {
+        const result = await scrapTask();
+
+        const fulfilledResult: PromiseFulfilledResult<ScrapResult> = {
+          status: 'fulfilled',
+          value: result,
+        };
+
+        scrapResults.push(fulfilledResult);
+      } catch (e) {
+        const rejectedResult: PromiseRejectedResult = {
+          status: 'rejected',
+          reason: e,
+        };
+
+        scrapResults.push(rejectedResult);
+      }
+    }
 
     return {
       directory: currentTimeDirectory,
-      result: results.map(this.handleSettledResult),
+      result: scrapResults.map(this.handleSettledResult),
     };
   }
 
