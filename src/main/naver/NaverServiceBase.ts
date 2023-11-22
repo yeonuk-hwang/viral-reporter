@@ -26,8 +26,13 @@ export abstract class NaverServiceBase implements NaverService {
       .then((securityButton) => securityButton?.click());
 
     const $postList = await this.findPostList($page);
+    await this.waitUntilImageLoaded($postList);
 
-    await $postList.evaluate(async ($postListElement) => {
+    return $page;
+  }
+
+  async waitUntilImageLoaded($postList: ElementHandle<HTMLUListElement>) {
+    return $postList.evaluate(async ($postListElement) => {
       const images = $postListElement.querySelectorAll(
         'li:nth-child(-n + 10) img:not([alt="이미지준비중"])'
       );
@@ -43,21 +48,16 @@ export abstract class NaverServiceBase implements NaverService {
       window.scrollTo({ top: 0, left: 0 });
 
       return Promise.all(
-        Array.from(images, (image, index) => {
+        Array.from(images, (image) => {
           if (image.complete && image.naturalWidth > 1) return true;
 
           return new Promise((resolve, reject) => {
-            image?.addEventListener('load', (e) => {
-              console.log('load', image, index);
-              resolve(e);
-            });
+            image?.addEventListener('load', resolve);
             image?.addEventListener('error', reject);
           });
         })
       );
     });
-
-    return $page;
   }
 
   async findPosts(
