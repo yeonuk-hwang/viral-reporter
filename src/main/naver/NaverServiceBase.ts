@@ -25,18 +25,14 @@ export abstract class NaverServiceBase implements NaverService {
       .waitForSelector('text/제한 해제')
       .then((securityButton) => securityButton?.click());
 
-    await $page.waitForSelector('ul.lst_view');
+    const $postList = await this.findPostList($page);
 
-    await $page.evaluate(async () => {
-      const images = window.document
-        ?.querySelector('ul.lst_view')
-        ?.querySelectorAll(
-          'li:nth-child(-n + 10) img:not([alt="이미지준비중"])'
-        );
-
-      const posts = window.document.querySelectorAll(
-        'ul.lst_view li:nth-child(-n + 10)'
+    await $postList.evaluate(async ($postListElement) => {
+      const images = $postListElement.querySelectorAll(
+        'li:nth-child(-n + 10) img:not([alt="이미지준비중"])'
       );
+
+      const posts = $postListElement.querySelectorAll('li:nth-child(-n + 10)');
 
       Array.from(posts).forEach((post) => {
         post.scrollIntoView({ behavior: 'smooth' });

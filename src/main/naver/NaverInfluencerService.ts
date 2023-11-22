@@ -5,7 +5,7 @@ export class InfluencerService extends NaverServiceBase {
   protected async findPostList(
     $searchPage: Page
   ): Promise<ElementHandle<HTMLUListElement>> {
-    const $postList = await $searchPage.$(
+    const $postList = await $searchPage.waitForSelector(
       'ul._inf_contents:not([style*="display:none"])'
     );
 
