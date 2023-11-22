@@ -1,5 +1,4 @@
 import { Browser, ElementHandle, Page, ScreenshotClip } from 'puppeteer';
-import { container } from 'webpack';
 import { NaverService, ScreenshotFilePath } from './types';
 
 export abstract class NaverServiceBase implements NaverService {
@@ -23,7 +22,8 @@ export abstract class NaverServiceBase implements NaverService {
 
     $page
       .waitForSelector('text/제한 해제')
-      .then((securityButton) => securityButton?.click());
+      .then((securityButton) => securityButton?.click())
+      .catch(() => undefined);
 
     const $postList = await this.findPostList($page);
     await this.waitUntilImageLoaded($postList);
