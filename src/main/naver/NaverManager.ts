@@ -15,7 +15,14 @@ export class NaverManager {
     this.naverService = naverService;
   }
 
+  removeCRLFCase(string: string) {
+    return string.replace(/[\r\n]+/g, '');
+  }
+
   async scrap(keywords: Keyword[], urls: URL[], screenshotDirectory: string) {
+    keywords = keywords.map(this.removeCRLFCase).filter(Boolean);
+    urls = urls.map(this.removeCRLFCase).filter(Boolean);
+
     console.log('keywords', keywords);
     console.log('urls', urls);
 
