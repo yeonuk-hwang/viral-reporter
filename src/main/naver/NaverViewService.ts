@@ -23,15 +23,19 @@ export class NaverViewService extends NaverServiceBase {
     postURL: string
   ) {
     try {
-      const $post = await $postList.$(
-        `li:has(a[href*="${postURL}"]):nth-child(-n+10)`
-      );
+      const query = `li:has(a[href*="${postURL}"]):nth-child(-n+10)`;
+
+      console.log('query', query);
+
+      const $post = await $postList.$(query);
 
       console.log('$post in findPost', $post);
 
       return $post ? $post.toElement('li') : null;
     } catch (e) {
       console.error(e);
+
+      return null;
     }
   }
 }
