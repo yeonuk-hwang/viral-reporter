@@ -22,11 +22,10 @@ export class NaverViewService extends NaverServiceBase {
     $postList: ElementHandle<HTMLUListElement>,
     postURL: string
   ) {
+    const query = `li:has(a[href*="${postURL}"]):nth-child(-n+10)`;
+
+    console.log('query', query);
     try {
-      const query = `li:has(a[href*="${postURL}"]):nth-child(-n+10)`;
-
-      console.log('query', query);
-
       const $post = await $postList.$(query);
 
       return $post ? $post.toElement('li') : null;
