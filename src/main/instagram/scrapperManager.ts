@@ -1,11 +1,11 @@
 import * as path from 'path';
-import * as fs from 'fs';
 import { mkdir } from 'fs/promises';
 import moment from 'moment';
 import { InsScarpper } from './scrapper';
 import { Keyword, URL } from './types';
 import { isFulfilled, isRejected } from './util';
 import { ScrapResult } from 'main/@types/scrap';
+import { removeCRLFCase } from '../util';
 
 type observer = (percent: number) => void;
 
@@ -26,8 +26,11 @@ export class ScrapperManager {
     await this.scrapper.login(userName, password);
   }
 
-  async scrap(hashTags: Keyword[], urls: URL[], screenshotDirectory: string) {
-    this.total = hashTags.length;
+  async scrap(keywords: Keyword[], urls: URL[], screenshotDirectory: string) {
+    const sanitizedKeywords = keywords.map(removeCRLFCase).filter(Boolean);
+    const sanitizedUrls = urls.map(removeCRLFCase).filter(Boolean);
+
+    this.total = sanitizedKeywords.length;
 
     const currentTimeDirectory = path.join(
       screenshotDirectory,
@@ -36,12 +39,12 @@ export class ScrapperManager {
 
     await mkdir(currentTimeDirectory, { recursive: true });
 
-    const scrapTasks = hashTags.map((tag, index) => {
+    const scrapTasks = sanitizedKeywords.map((tag, index) => {
       return async (): Promise<ScrapResult> => {
         try {
           const page = await this.scrapper.exploreHashTag(tag);
           const findResults = await Promise.allSettled(
-            urls.map(async (url) => {
+            sanitizedUrls.map(async (url) => {
               const post = await this.scrapper.findPost(page, url);
               await this.scrapper.makeRedBorder(post);
             })
