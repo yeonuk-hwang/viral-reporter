@@ -30,6 +30,8 @@ export class NaverManager {
       return async (): Promise<ScrapResult> => {
         const page = await this.naverService.search(keyword);
 
+        console.log('search end');
+
         try {
           const findResults = await Promise.allSettled(
             urls.map(async (url) => {
@@ -37,6 +39,8 @@ export class NaverManager {
               await this.naverService.makeRedBorder(post);
             })
           );
+
+          console.log('find end');
 
           if (findResults.some(({ status }) => status === 'fulfilled')) {
             const screenshotPath = await this.naverService.screenshot(

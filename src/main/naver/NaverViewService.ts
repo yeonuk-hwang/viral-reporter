@@ -30,7 +30,7 @@ export class NaverViewService extends NaverServiceBase {
 
       return $post ? $post.toElement('li') : null;
     } catch (e) {
-      // console.error(e);
+      console.error(e);
 
       return null;
     }
