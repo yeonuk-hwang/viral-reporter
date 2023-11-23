@@ -22,10 +22,16 @@ export class NaverViewService extends NaverServiceBase {
     $postList: ElementHandle<HTMLUListElement>,
     postURL: string
   ) {
-    const $post = await $postList.$(
-      `li:has(a[href*="${postURL}"]):nth-child(-n+10)`
-    );
+    try {
+      const $post = await $postList.$(
+        `li:has(a[href*="${postURL}"]):nth-child(-n+10)`
+      );
 
-    return $post ? $post.toElement('li') : null;
+      console.log('$post in findPost', $post);
+
+      return $post ? $post.toElement('li') : null;
+    } catch (e) {
+      console.error(e);
+    }
   }
 }
