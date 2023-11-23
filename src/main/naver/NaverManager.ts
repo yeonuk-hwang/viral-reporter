@@ -20,6 +20,9 @@ export class NaverManager {
   }
 
   async scrap(keywords: Keyword[], urls: URL[], screenshotDirectory: string) {
+    console.log('before keywords', keywords);
+    console.log('before urls', urls);
+
     keywords = keywords.map(this.removeCRLFCase).filter(Boolean);
     urls = urls.map(this.removeCRLFCase).filter(Boolean);
 
