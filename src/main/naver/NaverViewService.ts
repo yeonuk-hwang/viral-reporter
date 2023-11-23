@@ -23,7 +23,10 @@ export class NaverViewService extends NaverServiceBase {
     postURL: string
   ) {
     const query = `li:has(a[href*="${postURL}"]):nth-child(-n+10)`;
+    const queryWitouhtliteral = 'li:has(a[href*="';
+    +postURL + '"])' + ':nth-child(-n+10)';
 
+    console.log('queryWitouhtliteral', queryWitouhtliteral);
     console.log('query', query);
     try {
       const $post = await $postList.$(query);
