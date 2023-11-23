@@ -5,6 +5,7 @@ import moment from 'moment';
 import { Keyword, URL } from '../instagram/types';
 import { isFulfilled, isRejected } from '../instagram/util';
 import { ScrapResult } from 'main/@types/scrap';
+import { removeCRLFCase } from '../util';
 
 // TODO: NaverManager, ScrapperManager 하나로 합치기
 // 중복되는 로직 대다수, InsScrapper와 NaverService의 Interface만 통합한다면 가능
@@ -15,13 +16,9 @@ export class NaverManager {
     this.naverService = naverService;
   }
 
-  removeCRLFCase(string: string) {
-    return string.replace(/[\r\n]+/g, '');
-  }
-
   async scrap(keywords: Keyword[], urls: URL[], screenshotDirectory: string) {
-    const sanitizedKeywords = keywords.map(this.removeCRLFCase).filter(Boolean);
-    const sanitizedUrls = urls.map(this.removeCRLFCase).filter(Boolean);
+    const sanitizedKeywords = keywords.map(removeCRLFCase).filter(Boolean);
+    const sanitizedUrls = urls.map(removeCRLFCase).filter(Boolean);
 
     const currentTimeDirectory = path.join(
       screenshotDirectory,
