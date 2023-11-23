@@ -34,7 +34,7 @@ export abstract class NaverServiceBase implements NaverService {
   async waitUntilImageLoaded($postList: ElementHandle<HTMLUListElement>) {
     return $postList.evaluate(async ($postListElement) => {
       const images = $postListElement.querySelectorAll(
-        'li:nth-child(-n + 10) img:not([alt="이미지준비중"])'
+        'li:nth-child(-n + 10) .detail_box img'
       );
 
       const posts = $postListElement.querySelectorAll('li:nth-child(-n + 10)');
