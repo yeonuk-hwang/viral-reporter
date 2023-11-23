@@ -58,3 +58,7 @@ export const handleWithCustomErrors = (
     }
   );
 };
+
+export function removeCRLFCase(string: string) {
+  return string.replace(/[\r\n]+/g, '');
+}

@@ -5,6 +5,7 @@ import moment from 'moment';
 import { Keyword, URL } from '../instagram/types';
 import { isFulfilled, isRejected } from '../instagram/util';
 import { ScrapResult } from 'main/@types/scrap';
+import { removeCRLFCase } from '../util';
 
 // TODO: NaverManager, ScrapperManager 하나로 합치기
 // 중복되는 로직 대다수, InsScrapper와 NaverService의 Interface만 통합한다면 가능
@@ -16,6 +17,9 @@ export class NaverManager {
   }
 
   async scrap(keywords: Keyword[], urls: URL[], screenshotDirectory: string) {
+    const sanitizedKeywords = keywords.map(removeCRLFCase).filter(Boolean);
+    const sanitizedUrls = urls.map(removeCRLFCase).filter(Boolean);
+
     const currentTimeDirectory = path.join(
       screenshotDirectory,
       moment().format('YYYY-MM-DDTHH-mm-ss')
@@ -23,13 +27,13 @@ export class NaverManager {
 
     await mkdir(currentTimeDirectory, { recursive: true });
 
-    const scrapTasks = keywords.map((keyword, index) => {
+    const scrapTasks = sanitizedKeywords.map((keyword, index) => {
       return async (): Promise<ScrapResult> => {
         const page = await this.naverService.search(keyword);
 
         try {
           const findResults = await Promise.allSettled(
-            urls.map(async (url) => {
+            sanitizedUrls.map(async (url) => {
               const post = await this.naverService.findPosts(page, url);
               await this.naverService.makeRedBorder(post);
             })
@@ -54,8 +58,7 @@ export class NaverManager {
             };
           }
         } finally {
-          // TODO: delete
-          // page.close();
+          page.close();
         }
       };
     });
