@@ -26,16 +26,13 @@ export class NaverManager {
     const scrapTasks = keywords.map((keyword, index) => {
       return async (): Promise<ScrapResult> => {
         const page = await this.naverService.search(keyword);
+        console.group('keyword', keyword);
 
         try {
           const findResults = await Promise.allSettled(
             urls.map(async (url) => {
-              console.group('keyword', keyword);
               const post = await this.naverService.findPosts(page, url);
-              console.log('url', url);
-              console.log('post', post);
               await this.naverService.makeRedBorder(post);
-              console.groupEnd();
             })
           );
 
@@ -44,6 +41,8 @@ export class NaverManager {
               page,
               path.join(currentTimeDirectory, `/${index + 1}_${keyword}`)
             );
+
+            console.groupEnd();
 
             return {
               tag: keyword,
