@@ -120,8 +120,6 @@ export abstract class NaverServiceBase implements NaverService {
     const screenshotPathWithFileExtension = screenshotPath + '.png';
     const screenshotClip = await this.getScreenshotClip($searchPage);
 
-    await new Promise((r) => setTimeout(r, 5000));
-
     await $searchPage.screenshot({
       path: screenshotPathWithFileExtension,
       clip: screenshotClip,
@@ -163,7 +161,6 @@ export abstract class NaverServiceBase implements NaverService {
       );
     }
 
-    console.log(boxModelOfPostList, boxModelOfTenthPost);
     const BOTTOM_RIGHT_CORNER = 2;
 
     await $searchPage.evaluate(() => {
