@@ -26,22 +26,23 @@ export abstract class NaverServiceBase implements NaverService {
       .catch(() => undefined);
 
     const $postList = await this.findPostList($page);
+
     await this.waitUntilImageLoaded($postList);
 
     return $page;
   }
 
   async waitUntilImageLoaded($postList: ElementHandle<HTMLUListElement>) {
+    const $posts = await $postList.$$('li:nth-child(-n + 10)');
+
+    for (const $post of $posts) {
+      await $post.scrollIntoView();
+    }
+
     return $postList.evaluate(async ($postListElement) => {
       const images = $postListElement.querySelectorAll(
         'li:nth-child(-n + 10) img:not([alt="이미지준비중"])'
       );
-
-      const posts = $postListElement.querySelectorAll('li:nth-child(-n + 10)');
-
-      Array.from(posts).forEach((post) => {
-        post.scrollIntoView({ behavior: 'smooth' });
-      });
 
       await new Promise((resolve) => setTimeout(resolve, 2000));
 
