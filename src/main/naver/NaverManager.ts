@@ -30,8 +30,12 @@ export class NaverManager {
         try {
           const findResults = await Promise.allSettled(
             urls.map(async (url) => {
+              console.group('keyword', keyword);
               const post = await this.naverService.findPosts(page, url);
+              console.log('url', url);
+              console.log('post', post);
               await this.naverService.makeRedBorder(post);
+              console.groupEnd();
             })
           );
 
