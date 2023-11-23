@@ -162,7 +162,6 @@ export abstract class NaverServiceBase implements NaverService {
       );
     }
 
-    console.log(boxModelOfPostList, boxModelOfTenthPost);
     const BOTTOM_RIGHT_CORNER = 2;
 
     await $searchPage.evaluate(() => {
