@@ -15,9 +15,7 @@ export const bootstrap = async () => {
     ],
   };
 
-  const browserPaths = app.isPackaged
-    ? CHROME_PATHS[process.platform]
-    : undefined;
+  const browserPaths = CHROME_PATHS[process.platform];
 
   const browserPath = browserPaths?.find((path) => fs.existsSync(path));
 
