@@ -15,7 +15,14 @@ export class NaverManager {
     this.naverService = naverService;
   }
 
+  removeCRLFCase(string: string) {
+    return string.replace(/[\r\n]+/g, '');
+  }
+
   async scrap(keywords: Keyword[], urls: URL[], screenshotDirectory: string) {
+    const sanitizedKeywords = keywords.map(this.removeCRLFCase).filter(Boolean);
+    const sanitizedUrls = urls.map(this.removeCRLFCase).filter(Boolean);
+
     const currentTimeDirectory = path.join(
       screenshotDirectory,
       moment().format('YYYY-MM-DDTHH-mm-ss')
@@ -23,13 +30,13 @@ export class NaverManager {
 
     await mkdir(currentTimeDirectory, { recursive: true });
 
-    const scrapTasks = keywords.map((keyword, index) => {
+    const scrapTasks = sanitizedKeywords.map((keyword, index) => {
       return async (): Promise<ScrapResult> => {
         const page = await this.naverService.search(keyword);
 
         try {
           const findResults = await Promise.allSettled(
-            urls.map(async (url) => {
+            sanitizedUrls.map(async (url) => {
               const post = await this.naverService.findPosts(page, url);
               await this.naverService.makeRedBorder(post);
             })
