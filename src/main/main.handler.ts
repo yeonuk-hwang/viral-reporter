@@ -103,4 +103,8 @@ export const bootstrap = async () => {
       `${err.name}: ${err.message}`
     );
   });
+
+  app.on('quit', () => {
+    instagramManager.close();
+  });
 };
