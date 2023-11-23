@@ -16,6 +16,9 @@ export class NaverManager {
   }
 
   async scrap(keywords: Keyword[], urls: URL[], screenshotDirectory: string) {
+    console.log('keywords', keywords);
+    console.log('urls', urls);
+
     const currentTimeDirectory = path.join(
       screenshotDirectory,
       moment().format('YYYY-MM-DDTHH-mm-ss')

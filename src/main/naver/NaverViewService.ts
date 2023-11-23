@@ -29,11 +29,9 @@ export class NaverViewService extends NaverServiceBase {
 
       const $post = await $postList.$(query);
 
-      console.log('$post in findPost', $post);
-
       return $post ? $post.toElement('li') : null;
     } catch (e) {
-      console.error(e);
+      // console.error(e);
 
       return null;
     }
