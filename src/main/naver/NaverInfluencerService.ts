@@ -25,7 +25,7 @@ export class InfluencerService extends NaverServiceBase {
     const postID = this.extractBlogPostIDFromPostURL(postURL);
 
     const $post = await $postList.$(
-      `li:has(a[data-foryou-gdid*="${postID}"]):nth-child(-n+10)`
+      `:scope > li:has(a[data-foryou-gdid*="${postID}"]):not(.type_join)`
     );
 
     return $post ? $post.toElement('li') : null;
