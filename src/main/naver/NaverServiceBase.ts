@@ -149,13 +149,19 @@ export abstract class NaverServiceBase implements NaverService {
   }
 
   private async getScreenshotClip($searchPage: Page): Promise<ScreenshotClip> {
-    const $postList = await this.findPostList($searchPage);
-    const $tenthPost = await $postList.$('li:nth-child(10)');
+    const $postWrapper = await this.findPostList($searchPage);
+    const $posts = await $postWrapper.$$(':scope > li:not(.type_join)');
+    const $tenthPost = $posts[9];
+    const $lastPost = $posts[$posts.length - 1];
 
-    const boxModelOfTenthPost = await $tenthPost?.boxModel();
-    const boxModelOfPostList = await $postList?.boxModel();
+    // 요구조건은 10번째 포스트까지 스크린샷 검색 후 스크린샷 촬영
+    // 다만, 검색 결과의 총 포스트 수가 10개 미만일 경우 tenthPost가 없기에
+    // 마지막 포스트로 대체
+    const boxModelOfPost =
+      (await $tenthPost?.boxModel()) || (await $lastPost?.boxModel());
+    const boxModelOfPostList = await $postWrapper?.boxModel();
 
-    if (!boxModelOfTenthPost || !boxModelOfPostList) {
+    if (!boxModelOfPost || !boxModelOfPostList) {
       throw new Error(
         '스크린샷 영역을 찾을 수 없습니다. 네이버 UI가 변경된 경우 이 에러가 발생할 수 있습니다.'
       );
@@ -173,7 +179,7 @@ export abstract class NaverServiceBase implements NaverService {
       y: 0,
       // plus 10 to width and height for adding a margin to the screenshot
       width: boxModelOfPostList.margin[BOTTOM_RIGHT_CORNER].x + 10,
-      height: boxModelOfTenthPost.margin[BOTTOM_RIGHT_CORNER].y + 10,
+      height: boxModelOfPost.margin[BOTTOM_RIGHT_CORNER].y + 10,
     };
   }
 
