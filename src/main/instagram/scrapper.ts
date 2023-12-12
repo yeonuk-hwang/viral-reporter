@@ -1,4 +1,5 @@
-import {
+import { dialog } from 'electron';
+import puppeteer, {
   Browser,
   ElementHandle,
   Page,
@@ -27,10 +28,12 @@ class InsScarpperImpl implements InsScarpper {
   private browser: Browser;
   private URL = INSTAGRAM_URL;
   private cookie: Protocol.Network.Cookie[] | null;
+  private executablePath: string;
 
-  constructor(browser: Browser) {
+  constructor(browser: Browser, executablePath: string) {
     this.browser = browser;
     this.cookie = null;
+    this.executablePath = executablePath;
   }
 
   async login(userName: string, password: string) {
@@ -62,10 +65,41 @@ class InsScarpperImpl implements InsScarpper {
         throw new InvalidUserNameOrPasswordError();
       }
 
+      if (e instanceof DeactivatedIDError) {
+        dialog.showMessageBox({
+          message: `로그인 과정에서 문제가 발생했습니다.
+             잠시 후 실행되는 로그인 페이지를 확인해서 로그인 문제를 해결해주세요(아이디와 비밀번호는 자동으로 입력됩니다.)
+             문제 해결이 완료된 후 브라우저를 닫고 다시 프로그램에서 로그인 해주세요`,
+        });
+
+        this.retryLogin(userName, password);
+      }
+
       throw e;
     } finally {
       page.close();
     }
+  }
+
+  async retryLogin(userName: string, password: string) {
+    const browser = await puppeteer.launch({
+      args: ['--disk-cache-size=0', '--lang=en-US', '--no-sandbox'],
+      defaultViewport: null,
+      executablePath: this.executablePath,
+      headless: false,
+    });
+
+    const page = await browser.newPage();
+
+    await page.goto(this.URL.ROOT, {
+      waitUntil: 'networkidle0',
+    });
+    await page.type(`[aria-label*="username"]`, userName);
+    await page.type(`[aria-label*=Password]`, password);
+    await Promise.all([
+      page.click(`[type="submit"]`),
+      page.waitForNavigation(),
+    ]);
   }
 
   async exploreHashTag(tagName: string): Promise<Page> {
