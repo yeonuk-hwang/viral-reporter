@@ -54,6 +54,10 @@ export abstract class NaverServiceBase implements NaverService {
           return new Promise((resolve, reject) => {
             image?.addEventListener('load', resolve);
             image?.addEventListener('error', reject);
+
+            // 썸네일 이미지가 없지만 이미지 준비중으로 뜨는 경우
+            // 계속해서 이미지가 로드될 때까지 기다리기에, 5초동안 로드가 안될 경우 resolve 처리
+            setTimeout(resolve, 5000);
           });
         })
       );
