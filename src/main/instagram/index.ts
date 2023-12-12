@@ -4,14 +4,14 @@ import { NaverFactory } from '../naver/NaverFactory';
 import { InsScarpperImpl } from './scrapper';
 import { ScrapperManager } from './scrapperManager';
 
-export async function makeScrappers(executablePath?: string) {
+export async function makeScrappers(executablePath: string) {
   const browser = await puppeteer.launch({
     args: ['--disk-cache-size=0', '--lang=en-US', '--no-sandbox'],
     defaultViewport: null,
     executablePath,
   });
 
-  const instagramScrapper = new InsScarpperImpl(browser);
+  const instagramScrapper = new InsScarpperImpl(browser, executablePath);
   const instagramManager = new ScrapperManager(instagramScrapper);
 
   const cafeService = NaverFactory.createCafeService(browser);
