@@ -33,7 +33,7 @@ export abstract class NaverServiceBase implements NaverService {
 
   async waitUntilImageLoaded($postList: ElementHandle<HTMLUListElement>) {
     return $postList.evaluate(async ($postListElement) => {
-      const images = $postListElement.querySelectorAll(
+      const images = $postListElement.querySelectorAll<HTMLImageElement>(
         'li:nth-child(-n + 10) .detail_box img'
       );
 
@@ -137,10 +137,13 @@ export abstract class NaverServiceBase implements NaverService {
   }
 
   private async makeBorderForCategory($searchPage: Page) {
-    const categoryQuery = new URL($searchPage.url()).searchParams.get('where');
+    const QUERY_PARAMETER_NAME = 'ssc';
+    const categoryQuery = new URL($searchPage.url()).searchParams.get(
+      QUERY_PARAMETER_NAME
+    );
 
     const $categoryBox = await $searchPage.$(
-      `a[href*="where=${categoryQuery}"]`
+      `a[href*="${QUERY_PARAMETER_NAME}=${categoryQuery}"]`
     );
 
     if (!$categoryBox) {
