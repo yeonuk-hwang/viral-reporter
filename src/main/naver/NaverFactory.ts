@@ -5,21 +5,21 @@ import { NaverViewService } from './NaverViewService';
 export class NaverFactory {
   static createCafeService(browser: Browser) {
     const NAVER_CAFE_VIEW_URL =
-      'https://search.naver.com/search.naver?where=article';
+      'https://search.naver.com/search.naver?ssc=tab.cafe.all&sm=tab_jum';
 
     return new NaverViewService(browser, NAVER_CAFE_VIEW_URL);
   }
 
   static createBlogService(browser: Browser) {
     const NAVER_BLOG_VIEW_URL =
-      'https://search.naver.com/search.naver?where=blog';
+      'https://search.naver.com/search.naver?ssc=tab.blog.all&sm=tab_jum';
 
     return new NaverViewService(browser, NAVER_BLOG_VIEW_URL);
   }
 
   static createInfluencer(browser: Browser) {
     const NAVER_INFLUENCER_URL =
-      'https://search.naver.com/search.naver?where=influencer';
+      'https://search.naver.com/search.naver?ssc=tab.influencer.chl&where=influencer&sm=tab_jum';
 
     return new InfluencerService(browser, NAVER_INFLUENCER_URL);
   }
