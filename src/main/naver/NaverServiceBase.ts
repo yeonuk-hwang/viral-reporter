@@ -137,11 +137,9 @@ export abstract class NaverServiceBase implements NaverService {
   }
 
   private async makeBorderForCategory($searchPage: Page) {
-    const categoryQuery = new URL($searchPage.url()).searchParams.get('where');
+    const categoryQuery = new URL($searchPage.url()).searchParams.get('ssc');
 
-    const $categoryBox = await $searchPage.$(
-      `a[href*="where=${categoryQuery}"]`
-    );
+    const $categoryBox = await $searchPage.$(`a[href*="ssc=${categoryQuery}"]`);
 
     if (!$categoryBox) {
       throw new Error(
