@@ -163,9 +163,9 @@ class InsScarpperImpl implements InsScarpper {
   // 클라이언트 요구사항: 상위 9개 게시물 대상으로만 검색 및 스크린샷 촬영
   // 2023.09.02 기준 인스타그램 UI에서는 한 줄당 3개씩 총 28개 게시물이 노출
   // 따라서 상위 3개 줄만 추출하도록 함
-  private selectPopularPostBoxes = async (page: Page) => {
+  private async selectPopularPostBoxes(page: Page) {
     const allPopularPostBoxes = await page.$$(
-      'section > main > article > div > div > div > div'
+      'section > main > div > div:nth-child(2) > div > div'
     );
 
     const targetPopularPostBoxes = allPopularPostBoxes.slice(0, 3);
@@ -177,7 +177,7 @@ class InsScarpperImpl implements InsScarpper {
     }
 
     return targetPopularPostBoxes;
-  };
+  }
 
   async screenshot(
     page: Page,
