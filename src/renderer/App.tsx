@@ -31,7 +31,7 @@ export default function App() {
             <Route element={<NavbarWithOutlet />}>
               <Route path="naver" element={<NaverScrap />} />
               <Route path="instagram" element={<Login />} />
-              <Route path="/scrap" element={<InstagramScrap />} />
+              <Route path="scrap" element={<InstagramScrap />} />
             </Route>
           </Routes>
         </Router>

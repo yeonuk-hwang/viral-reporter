@@ -107,10 +107,11 @@ class InsScarpperImpl implements InsScarpper {
     page.setExtraHTTPHeaders({
       'Accept-Language': 'en',
     });
-    await page.goto(encodeURI(this.URL.EXPLORE + tagName), {
+    await page.goto(this.URL.EXPLORE + encodeURI(tagName), {
       waitUntil: 'networkidle0',
       timeout: 0,
     });
+
     return page;
   }
 
@@ -149,7 +150,7 @@ class InsScarpperImpl implements InsScarpper {
   }
 
   private selectHeader = async (page: Page) => {
-    const header = await page.$(`section > main > header`);
+    const header = await page.$('section > main > div > div:nth-child(1)');
 
     if (header === null) {
       throw new Error(
