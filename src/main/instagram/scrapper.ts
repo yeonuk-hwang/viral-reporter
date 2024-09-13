@@ -18,7 +18,10 @@ import { ScreenshotPath, URL } from './types';
 interface InsScarpper {
   login(userName: string, password: string): Promise<void>;
   exploreHashTag(tagName: string): Promise<Page>;
-  findPost(page: Page, postURL: URL): Promise<ElementHandle<HTMLAnchorElement>>;
+  findPost(
+    page: Page,
+    postURL: URL
+  ): Promise<ElementHandle<HTMLAnchorElement> | null>;
   makeRedBorder(post: ElementHandle<HTMLAnchorElement>): Promise<void>;
   screenshot(page: Page, path: string): Promise<ScreenshotPath>;
   close(): Promise<void>;
@@ -107,34 +110,31 @@ class InsScarpperImpl implements InsScarpper {
     page.setExtraHTTPHeaders({
       'Accept-Language': 'en',
     });
-    await page.goto(encodeURI(this.URL.EXPLORE + tagName), {
+    await page.goto(this.URL.EXPLORE + encodeURI(tagName), {
       waitUntil: 'networkidle0',
       timeout: 0,
     });
+
     return page;
   }
 
   async findPost(
     page: Page,
     postURL: URL
-  ): Promise<ElementHandle<HTMLAnchorElement>> {
+  ): Promise<ElementHandle<HTMLAnchorElement> | null> {
     const postURLwithoutDomain = this.extractPostURL(postURL);
 
     const popularPostBox = await this.selectPopularPostBoxes(page);
 
-    const allFindResult = await Promise.allSettled(
-      popularPostBox.map((postBox) =>
+    const allFindResult = await Promise.all(
+      popularPostBox.map(async (postBox) =>
         postBox.$(`a[href*="${postURLwithoutDomain}"]`)
       )
     );
 
-    const post = allFindResult.filter(({ value }) => value !== null)[0].value;
+    const post = allFindResult.filter((value) => value !== null)[0];
 
-    if (post !== undefined) {
-      return post as ElementHandle<HTMLAnchorElement>;
-    } else {
-      throw new PostNotExistError(`포스트가 존재하지 않습니다: ${postURL}`);
-    }
+    return post;
   }
 
   private extractPostURL(postURL: URL): string {
@@ -149,7 +149,7 @@ class InsScarpperImpl implements InsScarpper {
   }
 
   private selectHeader = async (page: Page) => {
-    const header = await page.$(`section > main > header`);
+    const header = await page.$('section > main > div > div:nth-child(1)');
 
     if (header === null) {
       throw new Error(
@@ -163,9 +163,9 @@ class InsScarpperImpl implements InsScarpper {
   // 클라이언트 요구사항: 상위 9개 게시물 대상으로만 검색 및 스크린샷 촬영
   // 2023.09.02 기준 인스타그램 UI에서는 한 줄당 3개씩 총 28개 게시물이 노출
   // 따라서 상위 3개 줄만 추출하도록 함
-  private selectPopularPostBoxes = async (page: Page) => {
+  private async selectPopularPostBoxes(page: Page) {
     const allPopularPostBoxes = await page.$$(
-      'section > main > article > div > div > div > div'
+      `div[style*="position: relative"] > div`
     );
 
     const targetPopularPostBoxes = allPopularPostBoxes.slice(0, 3);
@@ -177,7 +177,7 @@ class InsScarpperImpl implements InsScarpper {
     }
 
     return targetPopularPostBoxes;
-  };
+  }
 
   async screenshot(
     page: Page,
