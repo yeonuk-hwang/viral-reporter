@@ -18,7 +18,10 @@ import { ScreenshotPath, URL } from './types';
 interface InsScarpper {
   login(userName: string, password: string): Promise<void>;
   exploreHashTag(tagName: string): Promise<Page>;
-  findPost(page: Page, postURL: URL): Promise<ElementHandle<HTMLAnchorElement>>;
+  findPost(
+    page: Page,
+    postURL: URL
+  ): Promise<ElementHandle<HTMLAnchorElement> | null>;
   makeRedBorder(post: ElementHandle<HTMLAnchorElement>): Promise<void>;
   screenshot(page: Page, path: string): Promise<ScreenshotPath>;
   close(): Promise<void>;
@@ -118,24 +121,20 @@ class InsScarpperImpl implements InsScarpper {
   async findPost(
     page: Page,
     postURL: URL
-  ): Promise<ElementHandle<HTMLAnchorElement>> {
+  ): Promise<ElementHandle<HTMLAnchorElement> | null> {
     const postURLwithoutDomain = this.extractPostURL(postURL);
 
     const popularPostBox = await this.selectPopularPostBoxes(page);
 
-    const allFindResult = await Promise.allSettled(
-      popularPostBox.map((postBox) =>
+    const allFindResult = await Promise.all(
+      popularPostBox.map(async (postBox) =>
         postBox.$(`a[href*="${postURLwithoutDomain}"]`)
       )
     );
 
-    const post = allFindResult.filter(({ value }) => value !== null)[0].value;
+    const post = allFindResult.filter((value) => value !== null)[0];
 
-    if (post !== undefined) {
-      return post as ElementHandle<HTMLAnchorElement>;
-    } else {
-      throw new PostNotExistError(`포스트가 존재하지 않습니다: ${postURL}`);
-    }
+    return post;
   }
 
   private extractPostURL(postURL: URL): string {
@@ -166,7 +165,7 @@ class InsScarpperImpl implements InsScarpper {
   // 따라서 상위 3개 줄만 추출하도록 함
   private async selectPopularPostBoxes(page: Page) {
     const allPopularPostBoxes = await page.$$(
-      'section > main > div > div:nth-child(2) > div > div'
+      `div[style*="position: relative"] > div`
     );
 
     const targetPopularPostBoxes = allPopularPostBoxes.slice(0, 3);

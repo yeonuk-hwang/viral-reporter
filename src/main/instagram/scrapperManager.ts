@@ -43,14 +43,20 @@ export class ScrapperManager {
       return async (): Promise<ScrapResult> => {
         try {
           const page = await this.scrapper.exploreHashTag(tag);
-          const findResults = await Promise.allSettled(
+
+          const findResults = await Promise.all(
             sanitizedUrls.map(async (url) => {
               const post = await this.scrapper.findPost(page, url);
-              await this.scrapper.makeRedBorder(post);
+              if (post) {
+                await this.scrapper.makeRedBorder(post);
+                return post;
+              } else {
+                return null;
+              }
             })
           );
 
-          if (findResults.some(({ status }) => status === 'fulfilled')) {
+          if (findResults.some((post) => post !== null)) {
             const screenshotPath = await this.scrapper.screenshot(
               page,
               path.join(currentTimeDirectory, `/${index + 1}_${tag}.png`)
@@ -61,13 +67,13 @@ export class ScrapperManager {
               isPopularPostIncluded: true,
               screenshot: screenshotPath,
             };
-          } else {
-            return {
-              tag,
-              isPopularPostIncluded: false,
-              screenshot: null,
-            };
           }
+
+          return {
+            tag,
+            isPopularPostIncluded: false,
+            screenshot: null,
+          };
         } finally {
           this.current++;
           this.progress();
@@ -75,18 +81,17 @@ export class ScrapperManager {
       };
     });
 
-    const results = await Promise.allSettled(scrapTasks.map((task) => task()));
+    const results = [];
+
+    for (const task of scrapTasks) {
+      const result = await task();
+      results.push(result);
+    }
 
     return {
       directory: currentTimeDirectory,
-      result: results.map(this.handleSettledResult),
+      result: results,
     };
-  }
-
-  private handleSettledResult<T>(result: PromiseSettledResult<T>) {
-    if (isRejected(result)) throw result.reason;
-
-    if (isFulfilled(result)) return result.value;
   }
 
   progress() {
