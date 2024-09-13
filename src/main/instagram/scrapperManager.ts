@@ -62,18 +62,22 @@ export class ScrapperManager {
               path.join(currentTimeDirectory, `/${index + 1}_${tag}.png`)
             );
 
+            page.close();
+
             return {
               tag,
               isPopularPostIncluded: true,
               screenshot: screenshotPath,
             };
-          }
+          } else {
+            page.close();
 
-          return {
-            tag,
-            isPopularPostIncluded: false,
-            screenshot: null,
-          };
+            return {
+              tag,
+              isPopularPostIncluded: false,
+              screenshot: null,
+            };
+          }
         } finally {
           this.current++;
           this.progress();
