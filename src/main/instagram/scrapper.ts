@@ -171,6 +171,7 @@ class InsScarpperImpl implements InsScarpper {
     const targetPopularPostBoxes = allPopularPostBoxes.slice(0, 3);
 
     if (targetPopularPostBoxes.length !== 3) {
+    if (allPopularPostBoxes.length === 0) {
       throw new Error(
         '인기게시물 영역을 찾을 수 없습니다. 인스타그램 UI가 변경된 경우 또는 아이디가 일시적으로 비활성화되어서 검색을 할 수 없는 경우 이 에러가 발생할 수 있습니다, 인스타그램에 동일한 아이디로 로그인해서 아이디의 비활성화 여부를 확인 후 프로그램을 다시 실행해주세요'
       );
