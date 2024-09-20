@@ -138,8 +138,18 @@ class InsScarpperImpl implements InsScarpper {
   }
 
   private extractPostURL(postURL: URL): string {
-    const regexForFindPostURL = /p\/[\w-]+\/?/;
-    const postURLwithoutDomain = postURL.match(regexForFindPostURL)?.[0];
+    /*
+     example:
+        - https://www.instagram.com/p/CS4L_ooFfJb/
+        - https://www.instagram.com/reel/CS4L_ooFfJB/
+    */
+    const regexForFindPostURL = /(p|reel)\/([\w-]+)\/?/;
+
+    /*
+     example:
+        - CS4L_ooFfJb
+    */
+    const postURLwithoutDomain = postURL.match(regexForFindPostURL)?.[2];
 
     if (postURLwithoutDomain !== undefined) {
       return postURLwithoutDomain;
