@@ -4,15 +4,13 @@ import { NaverServiceBase } from './NaverServiceBase';
 export class InfluencerService extends NaverServiceBase {
   protected async findPostList(
     $searchPage: Page
-  ): Promise<ElementHandle<HTMLUListElement>> {
-    const $postList = await $searchPage.waitForSelector(
+  ): Promise<ElementHandle<HTMLUListElement> | null> {
+    const $postList = await $searchPage.$(
       'ul._inf_contents:not([style*="display:none"])'
     );
 
     if ($postList === null) {
-      throw new Error(
-        'Influencer 검색 결과 영역을 찾을 수 없습니다. 네이버 Influencer 검색 UI가 변경된 경우 이 에러가 발생할 수 있습니다.'
-      );
+      return null;
     }
 
     return $postList.toElement('ul');
