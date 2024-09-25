@@ -26,7 +26,10 @@ export abstract class NaverServiceBase implements NaverService {
       .catch(() => undefined);
 
     const $postList = await this.findPostList($page);
-    await this.waitUntilImageLoaded($postList);
+
+    if ($postList) {
+      await this.waitUntilImageLoaded($postList);
+    }
 
     return $page;
   }
@@ -79,6 +82,12 @@ export abstract class NaverServiceBase implements NaverService {
     const $postList = await this.findPostList($searchPage);
 
     const postNotFoundErrorMessage = '포스트가 존재하지 않습니다.';
+
+    const isResultsEmpty = $postList === null;
+
+    if (isResultsEmpty) {
+      throw new Error(postNotFoundErrorMessage);
+    }
 
     if (typeof postURL === 'string') {
       const $post = await this.findPost($postList, postURL);
@@ -192,7 +201,7 @@ export abstract class NaverServiceBase implements NaverService {
 
   protected abstract findPostList(
     $searchPage: Page
-  ): Promise<ElementHandle<HTMLUListElement>>;
+  ): Promise<ElementHandle<HTMLUListElement> | null>;
 
   protected abstract findPost(
     $postList: ElementHandle<HTMLUListElement>,
