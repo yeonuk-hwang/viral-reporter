@@ -107,7 +107,7 @@ export function Login() {
               <Button
                 isLoading={isLoading}
                 width="100%"
-                colorScheme="messenger"
+                colorScheme="blue"
                 onClick={requestLogin}
               >
                 로그인

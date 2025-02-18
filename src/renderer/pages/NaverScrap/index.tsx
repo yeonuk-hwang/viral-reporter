@@ -16,7 +16,7 @@ export function NaverScrap() {
         return (
           <>
             <Button
-              colorScheme="messenger"
+              colorScheme="blue"
               onClick={() =>
                 requestScrap(window.api.NAVER_BLOG_SCRAP, keywords, urls)
               }
@@ -25,7 +25,7 @@ export function NaverScrap() {
               블로그 검색
             </Button>
             <Button
-              colorScheme="messenger"
+              colorScheme="blue"
               onClick={() =>
                 requestScrap(window.api.NAVER_INFLUENCER_SCRAP, keywords, urls)
               }
@@ -34,7 +34,7 @@ export function NaverScrap() {
               인플루언서 검색
             </Button>
             <Button
-              colorScheme="messenger"
+              colorScheme="blue"
               onClick={() =>
                 requestScrap(window.api.NAVER_CAFE_SCRAP, keywords, urls)
               }

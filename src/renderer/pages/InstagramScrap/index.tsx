@@ -15,7 +15,7 @@ export function InstagramScrap() {
       ) => {
         return (
           <Button
-            colorScheme="messenger"
+            colorScheme="blue"
             onClick={() => requestScrap(window.api.SCRAP, keywords, urls)}
             isLoading={isLoading}
           >
