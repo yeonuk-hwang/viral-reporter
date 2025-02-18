@@ -30,7 +30,7 @@ export class InfluencerService extends NaverServiceBase {
   }
 
   private extractBlogPostIDFromPostURL(postURL: string): PostID {
-    const regexForFindPostID = /(blog.naver.com\/)([\w-]+\/?)(\d+)/g;
+    const regexForFindPostID = /(blog.naver.com\/)([\w-]+)\/(\d+)/g;
     const PostIDGroupIndex = 3;
     const postID = regexForFindPostID.exec(postURL)?.[PostIDGroupIndex];
 
