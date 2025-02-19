@@ -22,8 +22,12 @@ export class NaverViewService extends NaverServiceBase {
     $postList: ElementHandle<HTMLUListElement>,
     postURL: string
   ) {
+    const recommendedPostCount = (
+      await $postList.$$(':scope > li.type_join:nth-child(-n+10)')
+    ).length;
+
     const $post = await $postList.$(
-      `li:has(a[href*="${postURL}"]):nth-child(-n+10)`
+      `li:has(a[href*="${postURL}"]):nth-child(-n+${10 + recommendedPostCount})`
     );
 
     return $post ? $post.toElement('li') : null;
