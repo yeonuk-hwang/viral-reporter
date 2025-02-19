@@ -58,6 +58,7 @@ class InsScarpperImpl implements InsScarpper {
         page.click(`[type="submit"]`),
         page.waitForNavigation(),
       ]);
+
       this.cookie = await page.cookies();
 
       if (page.url().startsWith('https://www.instagram.com/challenge/')) {
@@ -190,10 +191,19 @@ class InsScarpperImpl implements InsScarpper {
     return targetPopularPostBoxes;
   }
 
+  private async closeSaveLoginInfoPopup(page: Page) {
+    const saveLoginInfoCloseButton = await page.$('[aria-label="Close"]');
+
+    if (saveLoginInfoCloseButton) {
+      await saveLoginInfoCloseButton.click();
+    }
+  }
+
   async screenshot(
     page: Page,
     screenshotPath: ScreenshotPath
   ): Promise<string> {
+    await this.closeSaveLoginInfoPopup(page);
     const header = await this.selectHeader(page);
     const popularBoxes = await this.selectPopularPostBoxes(page);
     const lastPopularBox = popularBoxes[popularBoxes.length - 1];
