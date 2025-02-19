@@ -22,14 +22,22 @@ export class NaverViewService extends NaverServiceBase {
     $postList: ElementHandle<HTMLUListElement>,
     postURL: string
   ) {
-    const recommendedPostCount = (
-      await $postList.$$(':scope > li.type_join:nth-child(-n+10)')
-    ).length;
+    const $top10_posts = (
+      await $postList.$$(':scope > li:not(.type_join)')
+    ).slice(0, 10);
 
-    const $post = await $postList.$(
-      `li:has(a[href*="${postURL}"]):nth-child(-n+${10 + recommendedPostCount})`
-    );
+    try {
+      const $post = await Promise.any(
+        $top10_posts.map(async (target) => {
+          const isPostMatch = await target.$(`a[href*="${postURL}"]`);
 
-    return $post ? $post.toElement('li') : null;
+          return isPostMatch ? target : Promise.reject();
+        })
+      );
+
+      return $post.toElement('li');
+    } catch {
+      return null;
+    }
   }
 }
