@@ -30,7 +30,7 @@ export class InfluencerService extends NaverServiceBase {
       const $post = await Promise.any(
         $top10_posts.map(async (target) => {
           const isPostMatch = await target.$(
-            `a[data-foryou-gdid*="${postID}"]`
+            `a.title_link[data-foryou-gdid*="${postID}"]`
           );
 
           return isPostMatch ? target : Promise.reject();
