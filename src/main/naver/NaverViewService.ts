@@ -29,7 +29,9 @@ export class NaverViewService extends NaverServiceBase {
     try {
       const $post = await Promise.any(
         $top10_posts.map(async (target) => {
-          const isPostMatch = await target.$(`a[href*="${postURL}"]`);
+          const isPostMatch = await target.$(
+            `a.title_link[href*="${postURL}"]`
+          );
 
           return isPostMatch ? target : Promise.reject();
         })
