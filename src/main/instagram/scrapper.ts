@@ -245,7 +245,7 @@ class InsScarpperImpl implements InsScarpper {
   async makeRedBorder(post: ElementHandle<HTMLAnchorElement>) {
     await post.evaluate((post) => {
       post.style.display = 'block';
-      post.style.outline = 'solid 5px red';
+      post.style.border = 'solid 5px red';
     });
   }
 
