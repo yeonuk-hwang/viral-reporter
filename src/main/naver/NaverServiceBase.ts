@@ -1,4 +1,10 @@
-import { Browser, ElementHandle, Page, ScreenshotClip } from 'puppeteer';
+import {
+  BoxModel,
+  Browser,
+  ElementHandle,
+  Page,
+  ScreenshotClip,
+} from 'puppeteer';
 import { NaverService, ScreenshotFilePath } from './types';
 
 export abstract class NaverServiceBase implements NaverService {
@@ -183,20 +189,44 @@ export abstract class NaverServiceBase implements NaverService {
       );
     }
 
-    const BOTTOM_RIGHT_CORNER = 2;
+    enum QUAD {
+      TOP_LEFT,
+      TOP_RIGHT,
+      BOTTOM_RIGHT,
+      BOTTOM_LEFT,
+    }
+
+    const SCREENSHOT_MARGIN = 10;
 
     await $searchPage.evaluate(() => {
       window.scrollBy(0, 0);
       return Promise.resolve();
     });
 
+    const searchBarBoxModel = await this.getSearchBarBoxModel($searchPage);
+
     return {
-      x: 0,
-      y: 0,
-      // plus 10 to width and height for adding a margin to the screenshot
-      width: boxModelOfPostList.margin[BOTTOM_RIGHT_CORNER].x + 10,
-      height: boxModelOfPost.margin[BOTTOM_RIGHT_CORNER].y + 10,
+      x: searchBarBoxModel.margin[QUAD.TOP_LEFT].x - SCREENSHOT_MARGIN / 2,
+      y: searchBarBoxModel.margin[QUAD.TOP_LEFT].y,
+      width: searchBarBoxModel.width + SCREENSHOT_MARGIN,
+      height:
+        boxModelOfPost.margin[QUAD.BOTTOM_RIGHT].y -
+        searchBarBoxModel.margin[QUAD.TOP_LEFT].y +
+        SCREENSHOT_MARGIN,
     };
+  }
+
+  private async getSearchBarBoxModel($searchPage: Page): Promise<BoxModel> {
+    const searchBox = await $searchPage.$('.search_area');
+    const boxModel = await searchBox?.boxModel();
+
+    if (!boxModel) {
+      throw new Error(
+        '검색바 영역을 찾을 수 없습니다. 네이버 UI가 변경된 경우 이 에러가 발생할 수 있습니다.'
+      );
+    }
+
+    return boxModel;
   }
 
   protected abstract findPostList(
